@@ -75,10 +75,16 @@
             hidden="true">
 
         <if>
-            <or>
-                <contains string="${command.output}" substring="error" casesensitive="false"/>
-                <contains string="${command.output}" substring="denied" casesensitive="false"/>
-            </or>
+            <and>
+                <not>
+                    <contains string="${command.output}" substring="errors: 0" casesensitive="false"/>
+                </not>
+                <or>
+                    <contains string="${command.output}" substring="error" casesensitive="false"/>
+                    <contains string="${command.output}" substring="denied" casesensitive="false"/>
+                </or>
+            </and>
+
             <then>
                 <fail message="Command failed" />
             </then>

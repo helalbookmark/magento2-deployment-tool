@@ -35,8 +35,11 @@
 
         <property name="command.static-content.deploy" value="cd ${release.target} &amp;&amp; ${bin.magerun98} setup:static-content:deploy" />
         <echo message="${command.static-content.deploy}"/>
-        <exec command="${command.static-content.deploy}" checkreturn="true" logoutput="true"/>
+        <exec command="${command.static-content.deploy}" checkreturn="true" logoutput="false" outputProperty="command.static-content.deploy.output"/>
 
+        <phingcall target="util:command:checkoutput">
+            <property name="command.output" value="${command.static-content.deploy.output}" override="true" />
+        </phingcall>
     </target>
 
     <target name="magento:di:compile"
@@ -46,7 +49,7 @@
 
         <property name="command.di.compile-multi-tenant" value="cd ${release.target} &amp;&amp; ${bin.magerun98} setup:di:compile-multi-tenant" />
         <echo message="${command.di.compile-multi-tenant}"/>
-        <exec command="${command.di.compile-multi-tenant}" checkreturn="true" logoutput="true" outputProperty="command.di.compile-multi-tenant.output"/>
+        <exec command="${command.di.compile-multi-tenant}" checkreturn="true" logoutput="false" outputProperty="command.di.compile-multi-tenant.output"/>
 
         <phingcall target="util:command:checkoutput">
             <property name="command.output" value="${command.di:compile-multi-tenant.output}" override="true" />
