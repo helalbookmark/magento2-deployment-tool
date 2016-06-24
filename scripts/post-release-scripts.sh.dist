@@ -1,0 +1,8 @@
+#!/bin/bash
+# place Project specific scripts to execute after deployment
+
+# Examples
+
+# sudo /etc/init.d/memcached restart
+# sudo /etc/init.d/varnish restart
+# sudo /etc/init.d/php-fpm restart

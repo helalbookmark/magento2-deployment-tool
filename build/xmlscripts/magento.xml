@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project name="Database" basedir="../..">
+
+    <target name="magento:env:set"
+            description="Replace env.php configuration with an specific template"
+            hidden="true">
+
+        <copy file="${template.env.php}"
+              tofile="${release.target}/${magento.dir}/app/etc/env.php"
+              overwrite="true"
+              verbose="true">
+        </copy>
+
+    </target>
+
+    <target name="magento:setup:run"
+            description="Run all sql scripts to update the modules version"
+            unless="skipUpdateScripts"
+            hidden="true">
+
+        <property name="command.setup.run" value="cd ${release.target} &amp;&amp; ${bin.magerun98} setup:upgrade" />
+        <echo message="${command.setup.run}"/>
+        <exec command="${command.setup.run}" checkreturn="true" logoutput="true" outputProperty="command.setup.run.output"/>
+
+        <phingcall target="util:command:checkoutput">
+            <property name="command.output" value="${command.setup.run.output}" override="true" />
+        </phingcall>
+    </target>
+
+    <target name="magento:static-content:deploy"
+            description="Deploys static view files"
+            unless="skipDeployStatic"
+            hidden="true">
+
+        <property name="command.static-content.deploy" value="cd ${release.target} &amp;&amp; ${bin.magerun98} setup:static-content:deploy" />
+        <echo message="${command.static-content.deploy}"/>
+        <exec command="${command.static-content.deploy}" checkreturn="true" logoutput="true"/>
+
+    </target>
+
+    <target name="magento:di:compile"
+            description="Generates all non-existing proxies and factories, and pre-compile class definitions, inheritance information and plugin definitions"
+            unless="skipCompilation"
+            hidden="true">
+
+        <property name="command.di.compile-multi-tenant" value="cd ${release.target} &amp;&amp; ${bin.magerun98} setup:di:compile-multi-tenant" />
+        <echo message="${command.di.compile-multi-tenant}"/>
+        <exec command="${command.di.compile-multi-tenant}" checkreturn="true" logoutput="true" outputProperty="command.di.compile-multi-tenant.output"/>
+
+        <phingcall target="util:command:checkoutput">
+            <property name="command.output" value="${command.di:compile-multi-tenant.output}" override="true" />
+        </phingcall>
+    </target>
+
+    <target name="magento:set:permisstions"
+            description="Set rigth permissions for folders and files"
+            unless="skipSetPermissions"
+            hidden="true">
+
+        <property name="command.set.permissions" value="cd ${release.target}/${magento.dir} &amp;&amp; ${command.permissions}" />
+        <echo message="${command.set.permissions}"/>
+        <exec command="${command.set.permissions}" checkreturn="true" logoutput="true"/>
+
+    </target>
+
+</project>

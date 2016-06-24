@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project name="DeploymentTool" default="help">
+
+    <import file="build/xmlscripts/util.xml"/>
+    <import file="build/xmlscripts/magento.xml"/>
+    <import file="build/xmlscripts/database.xml"/>
+    <import file="build/xmlscripts/release.xml"/>
+    <import file="build/xmlscripts/webtools.xml"/>
+
+    <tstamp>
+        <format property="release.timestamp" pattern="%Y%m%d-%H%M"/>
+    </tstamp>
+
+    <target name="release"
+            description="Release a new artifact version on current environment [release.version|skipMaintenance|skipDatabaseBackup|skipUpdateScripts|skipDeployStatic|skipCompilation]"
+            depends="util:properties:read,
+            release:get:project,
+            release:build:project,
+            magento:env:set,
+            webtools:symlinks:set,
+            magento:set:permisstions,
+            util:maintenance:set,
+            database:backup:create,
+            magento:setup:run,
+            magento:static-content:deploy,
+            magento:di:compile,
+            release:newVersion:set,
+            util:scripts:postRelease,
+            util:releases:cleanup">
+
+        <echo message="**********************************************************************"/>
+        <echo message="New version successfully released" level="warning"/>
+        <echo message="**********************************************************************"/>
+        <echo message="Version: ${release.version}"/>
+        <echo message="Release path: ${release.target}"/>
+        <echo message="Live path: ${server.live.dir}"/>
+        <echo message="**********************************************************************"/>
+    </target>
+
+    <target name="help"
+            description="show help with information about the instance"
+            depends="util:properties:read">
+
+        <echo message="**********************************************************************"/>
+        <echo message="Installation Directory:            ${server.live.dir}" level="warning"/>
+        <echo message="**********************************************************************"/>
+
+        <echo message="Deployment Process:"/>
+        <echo message=""/>
+        <echo message="1. bin/phing release"/>
+        <echo message="**********************************************************************"/>
+    </target>
+</project>

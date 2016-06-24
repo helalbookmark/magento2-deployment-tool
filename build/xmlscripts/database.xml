@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project name="Database" basedir="../..">
+
+    <target name="database:backup:create"
+            description="Create database backup before switching to a new version"
+            unless="skipDatabaseBackup"
+            hidden="true">
+
+        <property name="magerun.path" value="${current.version.target}/${bin.magerun98}" override="true"/>
+        <exec command="${magerun.path}" returnProperty="magerun.return"/>
+        <if>
+            <equals arg1="${magerun.return}" arg2="0"/>
+            <then>
+                <property name="database.dump.filename" value="${server.backup.dir}/backup_${release.timestamp}.sql.gz"/>
+                <property name="command.create.dump"
+                          value="cd ${current.version.target} &amp;&amp; ${bin.magerun98} db:dump --compression='gzip' ${database.dump.filename}" />
+
+                <echo message="${command.create.dump}" />
+                <exec command="${command.create.dump}" logoutput="true" checkreturn="true" outputProperty="command.create.dump.output"/>
+
+                <phingcall target="util:command:checkoutput">
+                    <property name="command.output" value="${command.create.dump.output}" override="true" />
+                </phingcall>
+            </then>
+            <else>
+                <echo message="Skip database backup as magerun does not exist"/>
+            </else>
+        </if>
+
+
+    </target>
+
+</project>

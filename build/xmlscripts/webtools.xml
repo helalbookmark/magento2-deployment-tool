@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project name="Webtools" basedir="../..">
+
+    <target name="webtools:symlinks:set"
+            description="Set project symlinks to static folders in server"
+            hidden="true">
+
+        <!-- For "pub" & "var" we symlink the folders inside, not the var folder itself -->
+        <symlink link="${release.target}/${magento.dir}" overwrite="true">
+            <fileset dir="${server.static.dir}/magento">
+                <include name="*" />
+                <exclude name="pub"/>
+                <exclude name="var"/>
+            </fileset>
+        </symlink>
+
+        <symlink link="${release.target}/${magento.dir}/pub" overwrite="true">
+            <fileset dir="${server.static.dir}/magento/pub">
+                <include name="*" />
+            </fileset>
+        </symlink>
+
+        <symlink link="${release.target}/${magento.dir}/var" overwrite="true">
+            <fileset dir="${server.static.dir}/magento/var">
+                <include name="*" />
+            </fileset>
+        </symlink>
+
+    </target>
+
+</project>

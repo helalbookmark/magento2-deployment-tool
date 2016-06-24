@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project name="Util" basedir="../..">
+
+    <target name="util:properties:read"
+            description="read all required properties files"
+            hidden="true">
+
+        <property file="${application.startdir}/config/project.properties"/>
+        <property file="${application.startdir}/build/config/default.properties"/>
+
+    </target>
+
+    <target name="util:maintenance:set"
+            depends="util:properties:read"
+            description="Set maintenance window"
+            unless="skipMaintenance"
+            hidden="true">
+
+        <echo message="${maintenance.set.command}" />
+        <exec command="${maintenance.set.command}" logoutput="true" checkreturn="true"/>
+
+    </target>
+
+    <target name="util:scripts:postRelease"
+            hidden="true">
+
+        <property name="command.post.scripts" value="`which bash` ${custom.post-script.path}"/>
+        <echo message="${command.post.scripts}"/>
+        <exec command="${command.post.scripts}" logoutput="true" />
+    </target>
+
+    <target name="util:releases:cleanup"
+            description="Remove old releases that are no longer needed"
+            hidden="true">
+
+        <if>
+            <and>
+                <isset property="releases.keep"/>
+                <not>
+                    <equals arg1="${releases.keep}" arg2="0"/>
+                </not>
+            </and>
+            <then>
+                <exec command="expr ${releases.keep} + 1" outputProperty="releases.keep"/>
+                <property name="command.releases.to.delete" value="ls -t  | tail -n +${releases.keep}"/>
+                <echo message="Old releases to delete:"/>
+                <exec command="cd ${server.releases.dir} &amp;&amp; ${command.releases.to.delete}" logoutput="true"/>
+                <echo message=""/>
+                <exec command="cd ${server.releases.dir} &amp;&amp; rm -rf `${command.releases.to.delete}`" logoutput="true"/>
+            </then>
+        </if>
+
+        <if>
+            <and>
+                <isset property="backup.keep"/>
+                <not>
+                    <equals arg1="${backup.keep}" arg2="0"/>
+                </not>
+            </and>
+            <then>
+                <exec command="expr ${backup.keep} + 1" outputProperty="backup.keep"/>
+                <property name="command.backup.to.delete" value="ls -t  | tail -n +${backup.keep}"/>
+                <echo message="Old backups to delete:"/>
+                <exec command="cd ${server.backup.dir} &amp;&amp; ${command.backup.to.delete}" logoutput="true"/>
+                <echo message=""/>
+                <exec command="cd ${server.backup.dir} &amp;&amp; rm -rf `${command.backup.to.delete}`" logoutput="true"/>
+            </then>
+        </if>
+
+    </target>
+
+    <target name="util:command:checkoutput"
+            description="Checks that output from command does not contain errors"
+            hidden="true">
+
+        <if>
+            <or>
+                <contains string="${command.output}" substring="error" casesensitive="false"/>
+                <contains string="${command.output}" substring="denied" casesensitive="false"/>
+            </or>
+            <then>
+                <fail message="Command failed" />
+            </then>
+            <else>
+                <echo message="Command output does not contain any errors" />
+            </else>
+        </if>
+
+    </target>
+
+
+</project>
