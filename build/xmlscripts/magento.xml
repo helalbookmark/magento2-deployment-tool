@@ -47,17 +47,17 @@
             unless="skipCompilation"
             hidden="true">
 
-        <property name="command.di.compile-multi-tenant" value="cd ${release.target} &amp;&amp; ${bin.magerun98} setup:di:compile-multi-tenant" />
-        <echo message="${command.di.compile-multi-tenant}"/>
-        <exec command="${command.di.compile-multi-tenant}" checkreturn="true" logoutput="false" outputProperty="command.di.compile-multi-tenant.output"/>
+        <property name="command.di.compile" value="cd ${release.target} &amp;&amp; ${bin.magerun98} setup:di:compile" />
+        <echo message="${command.di.compile}"/>
+        <exec command="${command.di.compile}" checkreturn="true" logoutput="false" outputProperty="command.di.compile"/>
 
         <phingcall target="util:command:checkoutput">
-            <property name="command.output" value="${command.di:compile-multi-tenant.output}" override="true" />
+            <property name="command.output" value="${command.di:compile.output}" override="true" />
         </phingcall>
     </target>
 
-    <target name="magento:set:permisstions"
-            description="Set rigth permissions for folders and files"
+    <target name="magento:set:permissions"
+            description="Set right permissions for folders and files"
             unless="skipSetPermissions"
             hidden="true">
 
