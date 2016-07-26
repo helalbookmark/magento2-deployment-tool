@@ -19,7 +19,7 @@
             release:build:project,
             magento:env:set,
             webtools:symlinks:set,
-            magento:set:permisstions,
+            magento:set:permissions,
             util:maintenance:set,
             database:backup:create,
             magento:setup:run,
