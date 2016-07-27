@@ -33,7 +33,12 @@
             unless="skipDeployStatic"
             hidden="true">
 
-        <property name="command.static-content.deploy" value="cd ${release.target} &amp;&amp; ${bin.magerun98} setup:static-content:deploy" />
+        <!-- Get list of all store languages to generate the static content for all of them -->
+        <exec command="cd ${release.target} &amp;&amp; ${bin.magerun98} config:get --format=json general/locale/code | grep -Po '(?&lt;=&quot;Value&quot;: &quot;)[^&quot;]*' | sort -u | xargs"
+              outputProperty="config.stores.languages"
+              checkreturn="true" />
+
+        <property name="command.static-content.deploy" value="cd ${release.target} &amp;&amp; ${bin.magerun98} setup:static-content:deploy ${config.stores.languages}" />
         <echo message="${command.static-content.deploy}"/>
         <exec command="${command.static-content.deploy}" checkreturn="true" logoutput="false" outputProperty="command.static-content.deploy.output"/>
 
