@@ -19,7 +19,7 @@
             unless="skipUpdateScripts"
             hidden="true">
 
-        <property name="command.setup.run" value="cd ${release.target} &amp;&amp; ${bin.magerun98} setup:upgrade" />
+        <property name="command.setup.run" value="cd ${release.target} &amp;&amp; ${bin.magento} setup:upgrade" />
         <echo message="${command.setup.run}"/>
         <exec command="${command.setup.run}" checkreturn="true" logoutput="true" outputProperty="command.setup.run.output"/>
 
@@ -38,7 +38,7 @@
               outputProperty="config.stores.languages"
               checkreturn="true" />
 
-        <property name="command.static-content.deploy" value="cd ${release.target} &amp;&amp; ${bin.magerun98} setup:static-content:deploy ${config.stores.languages}" />
+        <property name="command.static-content.deploy" value="cd ${release.target} &amp;&amp; ${bin.magento} setup:static-content:deploy ${config.stores.languages}" />
         <echo message="${command.static-content.deploy}"/>
         <exec command="${command.static-content.deploy}" checkreturn="true" logoutput="false" outputProperty="command.static-content.deploy.output"/>
 
@@ -52,7 +52,7 @@
             unless="skipCompilation"
             hidden="true">
 
-        <property name="command.di.compile" value="cd ${release.target} &amp;&amp; ${bin.magerun98} setup:di:compile" />
+        <property name="command.di.compile" value="cd ${release.target} &amp;&amp; ${bin.magento} setup:di:compile" />
         <echo message="${command.di.compile}"/>
         <exec command="${command.di.compile}" checkreturn="true" logoutput="false" outputProperty="command.di.compile"/>
 
