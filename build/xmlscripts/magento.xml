@@ -57,7 +57,7 @@
         <exec command="${command.di.compile}" checkreturn="true" logoutput="false" outputProperty="command.di.compile.output"/>
 
         <phingcall target="util:command:checkoutput">
-            <property name="command.output" value="${command.di:compile.output}" override="true" />
+            <property name="command.output" value="${command.di.compile.output}" override="true" />
         </phingcall>
     </target>
 
