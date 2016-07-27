@@ -82,10 +82,12 @@
                 <or>
                     <contains string="${command.output}" substring="error" casesensitive="false"/>
                     <contains string="${command.output}" substring="denied" casesensitive="false"/>
+                    <contains string="${command.output}" substring="failed" casesensitive="false"/>
                 </or>
             </and>
 
             <then>
+                <echo message="${command.output}" level="error"/>
                 <fail message="Command failed" />
             </then>
             <else>
