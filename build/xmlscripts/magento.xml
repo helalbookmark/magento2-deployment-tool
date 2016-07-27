@@ -54,7 +54,7 @@
 
         <property name="command.di.compile" value="cd ${release.target} &amp;&amp; ${bin.magento} setup:di:compile" />
         <echo message="${command.di.compile}"/>
-        <exec command="${command.di.compile}" checkreturn="true" logoutput="false" outputProperty="command.di.compile"/>
+        <exec command="${command.di.compile}" checkreturn="true" logoutput="false" outputProperty="command.di.compile.output"/>
 
         <phingcall target="util:command:checkoutput">
             <property name="command.output" value="${command.di:compile.output}" override="true" />

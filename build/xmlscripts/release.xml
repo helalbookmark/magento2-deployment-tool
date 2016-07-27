@@ -94,7 +94,11 @@
             hidden="true">
 
         <echo message="cd ${release.target} &amp;&amp; ${command.build.project}" />
-        <exec command="cd ${release.target} &amp;&amp; ${command.build.project}" logoutput="false" checkreturn="true"/>
+        <exec command="cd ${release.target} &amp;&amp; ${command.build.project}" logoutput="false" checkreturn="true" outputProperty="command.build.project.output"/>
+
+        <phingcall target="util:command:checkoutput">
+            <property name="command.output" value="${command.build.project.output}" override="true" />
+        </phingcall>
 
     </target>
 
