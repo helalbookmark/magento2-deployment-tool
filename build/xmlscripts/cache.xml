@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project name="Cache" basedir="../..">
+
+    <target name="cache:opcache:restart"
+            hidden="true"
+            unless="skipRestartOpcache">
+
+        <echo message="${command.opcache.restart}"/>
+        <exec command="${command.opcache.restart}" logoutput="true" checkreturn="true"/>
+    </target>
+
+</project>

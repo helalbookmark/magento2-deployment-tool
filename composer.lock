@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "350022cffd597c36927d87fa09f85ab4",
-    "content-hash": "ac1cbe12af513f4eb96c68537505df3e",
+    "hash": "1618844bd8fb09366b15470ed4004c9f",
+    "content-hash": "79dc7ad8ac4980ce0232ac73cf641008",
     "packages": [
         {
             "name": "phing/phing",
@@ -97,12 +97,35 @@
                 "tool"
             ],
             "time": "2016-03-10 21:39:23"
+        },
+        {
+            "name": "staempfli/opcache-tool",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "ssh://git@stash.staempfli.com:7999/stmagetwo/opcache-tool.git",
+                "reference": "6e9963b8de1203e798446798407f8c6c5ca64af1"
+            },
+            "bin": [
+                "opcache-tool"
+            ],
+            "type": "library",
+            "authors": [
+                {
+                    "name": "Juan Alonso",
+                    "email": "juan.alonso@staempfli.com"
+                }
+            ],
+            "description": "Staempfli AG opcache-cachetool binary",
+            "time": "2016-08-02 15:23:12"
         }
     ],
     "packages-dev": [],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {
+        "staempfli/opcache-tool": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": [],

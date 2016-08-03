@@ -18,7 +18,8 @@
     }
   ],
   "require": {
-    "phing/phing": "2.*"
+    "phing/phing": "2.*",
+    "staempfli/opcache-tool": "dev-master"
   },
   "config": {
     "secure-http": false,
