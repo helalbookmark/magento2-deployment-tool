@@ -27,6 +27,7 @@
             magento:static-content:deploy,
             magento:di:compile,
             release:newVersion:set,
+            cache:clean:magento,
             cache:opcache:restart,
             util:scripts:postRelease,
             util:releases:cleanup">

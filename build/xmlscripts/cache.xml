@@ -3,11 +3,22 @@
 <project name="Cache" basedir="../..">
 
     <target name="cache:opcache:restart"
+            description="clear OpCache"
             hidden="true"
             unless="skipRestartOpcache">
 
         <echo message="${command.opcache.restart}"/>
         <exec command="${command.opcache.restart}" logoutput="true" checkreturn="true"/>
+    </target>
+
+    <target name="cache:clean:magento"
+            description="Clear magento cache"
+            hidden="true">
+
+        <property name="command.magento.cache" value="cd ${release.target} &amp;&amp; ${bin.magento} cache:clean" />
+        <echo message="${command.magento.cache}"/>
+        <exec command="${command.magento.cache}" checkreturn="true" logoutput="true" />
+
     </target>
 
 </project>

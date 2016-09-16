@@ -85,7 +85,6 @@
                     <contains string="${command.output}" substring="failed" casesensitive="false"/>
                 </or>
             </and>
-
             <then>
                 <echo message="${command.output}" level="error"/>
                 <fail message="Command failed" />
