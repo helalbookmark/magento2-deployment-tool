@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project name="Maintenance" basedir="../..">
+
+    <target name="util:maintenance:set"
+            depends="util:properties:read"
+            description="Set maintenance window"
+            unless="skipMaintenance"
+            hidden="true">
+
+        <echo message="${maintenance.set.command}" />
+        <exec command="${maintenance.set.command}" logoutput="true" checkreturn="true"/>
+        <phingcall target="cache:opcache:restart"/>
+
+    </target>
+
+</project>

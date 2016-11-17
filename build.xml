@@ -7,6 +7,7 @@
     <import file="build/xmlscripts/database.xml"/>
     <import file="build/xmlscripts/release.xml"/>
     <import file="build/xmlscripts/webtools.xml"/>
+    <import file="build/xmlscripts/maintenance.xml"/>
     <import file="build/xmlscripts/cache.xml"/>
 
     <tstamp>
