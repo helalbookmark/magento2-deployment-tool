@@ -15,7 +15,8 @@
     </tstamp>
 
     <target name="release"
-            description="Release a new artifact version on current environment [release.version|skipMaintenance|skipDatabaseBackup|skipUpdateScripts|skipDeployStatic|skipCompilation]"
+            description="Release a new artifact version on current environment
+            [release.version|skipMaintenance|skipDatabaseBackup|skipUpdateScripts|skipDeployStatic|skipCompilation]"
             depends="util:properties:read,
             release:get:project,
             release:build:project,
@@ -28,8 +29,7 @@
             magento:static-content:deploy,
             magento:di:compile,
             release:newVersion:set,
-            cache:clean:magento,
-            cache:opcache:restart,
+            cache:clean:all,
             util:scripts:postRelease,
             util:releases:cleanup">
 
