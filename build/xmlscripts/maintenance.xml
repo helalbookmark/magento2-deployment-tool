@@ -10,7 +10,7 @@
 
         <echo message="${maintenance.set.command}" />
         <exec command="${maintenance.set.command}" logoutput="true" checkreturn="true"/>
-        <phingcall target="cache:opcache:restart"/>
+        <phingcall target="cache:clean:all"/>
 
     </target>
 

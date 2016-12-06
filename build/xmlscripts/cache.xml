@@ -2,6 +2,33 @@
 
 <project name="Cache" basedir="../..">
 
+    <target name="cache:clean:all"
+            description="Clear all caches"
+            depends="cache:magento:clean,
+                cache:opcache:restart,
+                cache:varnish:restart"
+            hidden="true">
+
+        <echo message="All Caches restarted"/>
+    </target>
+
+    <target name="cache:magento:clean"
+            description="Clear magento cache"
+            hidden="true">
+
+        <property name="cache.magento.bin" value="${release.target}/${bin.magento}"/>
+        <if>
+            <available property="cache.magento.bin.available" file="${cache.magento.bin}"/>
+            <then>
+                <echo message="${cache.magento.bin} cache:clean"/>
+                <exec command="${cache.magento.bin} cache:clean" checkreturn="true" logoutput="true" />
+            </then>
+            <else>
+                <echo message="${cache.magento.bin} not available to execute cache:clean command"/>
+            </else>
+        </if>
+    </target>
+
     <target name="cache:opcache:restart"
             description="clear OpCache"
             hidden="true"
@@ -11,14 +38,22 @@
         <exec command="${command.opcache.restart}" logoutput="true" checkreturn="true"/>
     </target>
 
-    <target name="cache:clean:magento"
-            description="Clear magento cache"
-            hidden="true">
+    <target name="cache:varnish:restart"
+            description="clear Varnish"
+            hidden="true"
+            unless="skipRestartVarnish">
 
-        <property name="command.magento.cache" value="cd ${release.target} &amp;&amp; ${bin.magento} cache:clean" />
-        <echo message="${command.magento.cache}"/>
-        <exec command="${command.magento.cache}" checkreturn="true" logoutput="true" />
-
+        <if>
+            <istrue value="${varnish.installed}"/>
+            <then>
+                <echo message="${command.varnish.restart}"/>
+                <exec command="${command.varnish.restart}" logoutput="true" checkreturn="true"/>
+            </then>
+            <else>
+                <echo message="Varnish not installed"/>
+            </else>
+        </if>
     </target>
+
 
 </project>
