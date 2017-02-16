@@ -31,12 +31,8 @@
     <target name="magento:static-content:deploy"
             description="Deploys static view files"
             unless="skipDeployStatic"
+            depends="magento:static-content:locales:set"
             hidden="true">
-
-        <!-- Get list of all store languages to generate the static content for all of them -->
-        <exec command="cd ${release.target} &amp;&amp; ${bin.magerun98} config:get --format=json general/locale/code | grep -Po '(?&lt;=&quot;Value&quot;: &quot;)[^&quot;]*' | sort -u | xargs"
-              outputProperty="config.stores.languages"
-              checkreturn="true" />
 
         <property name="command.static-content.deploy" value="cd ${release.target} &amp;&amp; ${bin.magento} setup:static-content:deploy ${config.stores.languages}" />
         <echo message="${command.static-content.deploy}"/>
@@ -45,6 +41,25 @@
         <phingcall target="util:command:checkoutput">
             <property name="command.output" value="${command.static-content.deploy.output}" override="true" />
         </phingcall>
+    </target>
+
+    <target name="magento:static-content:locales:set"
+        description="Set locales for deploying static content"
+        hidden="true">
+        <!-- Get list of all store languages to generate the static content for all of them -->
+        <exec command="cd ${release.target} &amp;&amp; ${bin.magerun98} config:get --format=json general/locale/code | grep -Po '(?&lt;=&quot;Value&quot;: &quot;)[^&quot;]*' | sort -u | xargs"
+              outputProperty="config.stores.languages"
+              checkreturn="true" />
+
+        <!-- Ensure that en_US language is always in the list -->
+        <if>
+            <not>
+                <contains substring="en_US" string="${config.stores.languages}"/>
+            </not>
+            <then>
+                <property name="config.stores.languages" value="${config.stores.languages} en_US" override="true"/>
+            </then>
+        </if>
     </target>
 
     <target name="magento:di:compile"
