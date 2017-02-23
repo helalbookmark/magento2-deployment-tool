@@ -1,9 +1,8 @@
 {
-  "name": "staempfli/mage-deployment-tool",
-  "description": "Staempfli AG Magento Deployment Tool",
-  "type": "staempfli-mage-tool",
+  "name": "staempfli/magento2-deployment-tool",
+  "description": "Staempfli AG Magento2 Deployment Tool",
   "license": [
-    "Private"
+    "GPL-3.0"
   ],
   "authors": [
     {
@@ -11,20 +10,15 @@
       "email": "juan.alonso@staempfli.com"
     }
   ],
-  "repositories": [
-    {
-      "type": "composer",
-      "url": "http://packages.staempfli.com"
-    }
-  ],
   "require": {
     "phing/phing": "2.*",
-    "staempfli/opcache-tool": "dev-master"
+    "n98/magerun2": "1.3.2",
+    "staempfli/cachetool": "2.1.0"
   },
   "config": {
-    "secure-http": false,
     "bin-dir": "bin"
   },
+  "bin": ["mg2-deployer"],
   "scripts": {
     "setPermissionsBin": "chmod -R +x bin",
     "post-install-cmd": [
