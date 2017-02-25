@@ -19,6 +19,10 @@
     "bin-dir": "bin"
   },
   "bin": ["bin/mg2-deployer"],
+  "autoload": {
+    "classmap": ["classes/phing/"]
+  },
+  "include-path": ["classes"],
   "scripts": {
     "setPermissionsBin": "chmod -R +x bin",
     "post-install-cmd": [
