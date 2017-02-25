@@ -23,6 +23,7 @@
     "classmap": ["classes/phing/"]
   },
   "include-path": ["classes"],
+  "exclude-from-classmap": ["vendor/phing/phing/classes/phing/Phing.php"],
   "scripts": {
     "setPermissionsBin": "chmod -R +x bin",
     "post-install-cmd": [
