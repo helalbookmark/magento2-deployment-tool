@@ -2,15 +2,14 @@
 <?php
 
 /**
- * Shell wrapper for Phing
+ * Shell wrapper for running mg2-deployer using phing globally
  */
-
 // turn off html errors
 ini_set('html_errors', 'off');
 
 define('BP', realpath(dirname(__DIR__)));
 
 putenv("PHING_DIR=".BP);
-putenv("PHING_HOME=" . BP . '/vendor/phing/phing');
+putenv("PHING_HOME=" . BP . '/../../phing/phing');
 
 require_once getenv("PHING_HOME") . '/bin/phing.php';
