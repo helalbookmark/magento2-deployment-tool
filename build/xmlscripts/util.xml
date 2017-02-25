@@ -7,7 +7,7 @@
             hidden="true">
 
         <property file="${application.startdir}/config/project.properties"/>
-        <property file="${application.startdir}/build/config/default.properties"/>
+        <property file="${phing.home}/build/config/default.properties"/>
 
     </target>
 
