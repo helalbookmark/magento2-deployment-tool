@@ -176,7 +176,6 @@ class Phing
      */
     public static function start($args, array $additionalUserProperties = null)
     {
-        echo "test3 " . PHP_EOL;
         try {
             $m = new Phing();
             $m->execute($args);

@@ -12,4 +12,4 @@ define('BP', realpath(dirname(__DIR__)));
 putenv("PHING_DIR=".BP);
 putenv("PHING_HOME=" . BP . '/../../phing/phing');
 
-require_once getenv("PHING_HOME") . '/bin/phing.php';
+require_once BP . '/bin/phing.php';
