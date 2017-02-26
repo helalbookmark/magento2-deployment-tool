@@ -8,6 +8,18 @@
     <target name="setup:validate:before"
             hidden="true">
         <fail if="setup.done" message="Setup was already done. Please remove everything and try again."/>
+
+        <echo message="ATTENTION:" level="warning"/>
+        <echo message="This command overwrites the database selected for installation." level="warning"/>
+        <echo message="If you have data in it, create a backup to restore it after the setup process." level="warning"/>
+
+        <input message="Do you want to continue?" propertyName="setup.validate.continue" validArgs="y,n"/>
+        <if>
+            <equals arg1="${setup.validate.continue}" arg2="n"/>
+            <then>
+                <fail message="Setup installation aborted."/>
+            </then>
+        </if>
     </target>
 
     <target name="setup:project:properties"
@@ -17,7 +29,6 @@
 
     <target name="setup:folder:structure"
             hidden="true">
-
         <mkdir dir="${application.startdir}/${releases.dir}"/>
         <mkdir dir="${application.startdir}/${backup.dir}"/>
         <mkdir dir="${application.startdir}/${static.dir}"/>
@@ -33,7 +44,6 @@
               tofile="${application.startdir}/deployment-settings/templates/maintenance/${magento.dir}/pub/index.php"
               haltonerror="true"/>
         <symlink target="${application.startdir}/${maintenance.page}" link="${application.startdir}/${live.symlink}" overwrite="true"/>
-
     </target>
 
     <target name="setup:install:magento"
@@ -42,8 +52,7 @@
             release:target:validate,
             release:get:project,
             release:build:project"
-            hidden="true"
-    >
+            hidden="true">
         <property name="setup.magento.dir" value="${release.target}/${magento.dir}"/>
 
         <property name="command.setup.install" value="${bin.n98-magerun2} install
@@ -66,23 +75,24 @@
     
     <target name="setup:install:params"
             hidden="true">
-
-        <!-- @TODO: set master -->
-        <property name="release.version" value="develop" override="true"/>
+        <property name="release.version" value="master" override="true"/>
         <property name="release.overwrite" value="y" override="true"/>
-        
     </target>
 
     <target name="setup:static:data"
             hidden="true">
         <mkdir dir="${application.startdir}/${static.dir}/magento"/>
+
+        <echo message="move ${setup.magento.dir}/app/etc/env.php to ${application.startdir}/${static.dir}/magento/app/etc/env.php"/>
         <move file="${setup.magento.dir}/app/etc/env.php"
               tofile="${application.startdir}/${static.dir}/magento/app/etc/env.php"
               haltonerror="true"/>
+
         <echo message="move ${setup.magento.dir}/pub/media to ${application.startdir}/${static.dir}/magento/pub/media"/>
         <move file="${setup.magento.dir}/pub/media"
               todir="${application.startdir}/${static.dir}/magento/pub/media"
               haltonerror="true"/>
+
         <echo message="move ${setup.magento.dir}/var/log to ${application.startdir}/${static.dir}/magento/var/log"/>
         <move file="${setup.magento.dir}/var/log"
               todir="${application.startdir}/${static.dir}/magento/var/log"
