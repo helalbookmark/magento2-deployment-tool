@@ -2,7 +2,7 @@
 
 ## Installation
 
-Global installation is required using composer
+Global installation using composer is required.
 
 0. Composer require:
 
