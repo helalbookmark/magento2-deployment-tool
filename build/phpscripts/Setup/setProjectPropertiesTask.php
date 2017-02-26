@@ -1,17 +1,18 @@
 <?php
 
 /**
- * askProjectPropertiesTask
+ * setProjectPropertiesTask
  *
  * @copyright Copyright (c) 2016 Staempfli AG
  * @author    juan.alonso@staempfli.com
  */
 require_once "phing/Task.php";
 require_once "phing/input/InputRequest.php";
+require_once 'phing/system/io/PhingFile.php';
 
-class askProjectPropertiesTask extends Task
+class setProjectPropertiesTask extends Task
 {
-    protected $propertiesToAsk = [
+    protected $projectProperties = [
         "git.repo.url" => [],
         "live.symlink" => [],
         "magento.dir" => [],
@@ -22,10 +23,13 @@ class askProjectPropertiesTask extends Task
 
     public function main()
     {
-        foreach ($this->propertiesToAsk as $property => $validValues) {
+        $this->log("Input project properties");
+        foreach ($this->projectProperties as $property => $validValues) {
             $inputValue = $this->promptProperty($property, $validValues);
             $this->project->setUserProperty($property, $inputValue);
         }
+        $this->exportProjectProperties();
+
     }
 
     protected function promptProperty($property, array $validValues)
@@ -71,5 +75,28 @@ class askProjectPropertiesTask extends Task
             return true;
         }
         return false;
+    }
+
+    protected function exportProjectProperties()
+    {
+        $propertiesText = "";
+        $propertiesNames = array_keys($this->projectProperties);
+        foreach ($propertiesNames as $propertyName) {
+            $propertiesText .= $propertyName . "=" . $this->project->getProperty($propertyName) . PHP_EOL;
+        }
+        $projectPropertiesFile = sprintf("%s/deployment-settings/project.properties", $this->project->getProperty("application.startdir"));
+        $this->putContentInFile($propertiesText, $projectPropertiesFile);
+        $this->log(sprintf("Properties saved in: %s", $projectPropertiesFile));
+    }
+
+    protected function putContentInFile($content, $targetFile)
+    {
+        $parentDir = new PhingFile(dirname($targetFile));
+        if (!$parentDir->exists()) {
+            $parentDir->mkdirs(0755);
+        }
+        if (!file_put_contents($targetFile, $content)) {
+            throw new BuildException('Failed writing to ' . $targetFile);
+        }
     }
 }

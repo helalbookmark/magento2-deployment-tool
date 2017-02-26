@@ -3,31 +3,20 @@
 <project name="Setup">
 
     <includepath classpath="${phing.dir}/build/phpscripts/Setup"/>
-    <taskdef name="askProjectProperties" classname="askProjectPropertiesTask"/>
+    <taskdef name="setProjectProperties" classname="setProjectPropertiesTask"/>
 
-    <target name="setup"
-            depends="util:properties:read,
-            setup:validate:before,
-            setup:project:properties,
-            setup:folder:structure,
-            setup:magento:install,
-            setup:static:data">
-
-        <property name="setup.done" value="1"/>
-        <exportproperties targetfile="${application.startdir}/deployment-settings/project.properties"
-                          disallowedPropertyPrefixes="'host.', 'phing.', 'os.', 'php.', 'line.', 'env.', 'user.', 'project.', 'application.startdir'"/>
-
-    </target>
-
-    <target name="setup:validate:before">
+    <target name="setup:validate:before"
+            hidden="true">
         <fail if="setup.done" message="Setup was already done. Please remove everything and try again."/>
     </target>
 
-    <target name="setup:project:properties">
-        <askProjectProperties/>
+    <target name="setup:project:properties"
+            hidden="true">
+        <setProjectProperties/>
     </target>
 
-    <target name="setup:folder:structure">
+    <target name="setup:folder:structure"
+            hidden="true">
 
         <mkdir dir="${application.startdir}/${releases.dir}"/>
         <mkdir dir="${application.startdir}/${backup.dir}"/>
@@ -43,23 +32,60 @@
         <copy file="${phing.dir}/settings/templates/maintenance.php"
               tofile="${application.startdir}/deployment-settings/templates/maintenance/${magento.dir}/pub/index.php"
               haltonerror="true"/>
+        <symlink target="${application.startdir}/${maintenance.page}" link="${application.startdir}/${live.symlink}" overwrite="true"/>
 
     </target>
 
-    <target name="setup:magento:install">
-        <echo message="use n98-magerun to install magento into releases dir"/>
+    <target name="setup:install:magento"
+            depends= "setup:install:params,
+            release:get:properties,
+            release:target:validate,
+            release:get:project,
+            release:build:project"
+            hidden="true"
+    >
+        <property name="setup.magento.dir" value="${release.target}/${magento.dir}"/>
+
+        <property name="command.setup.install" value="${bin.n98-magerun2} install
+        --installationFolder=${setup.magento.dir}
+        --noDownload
+        --forceUseDb=true
+        --installSampleData=no
+        --useDefaultConfigParams=no
+        --replaceHtaccessFile=n"
+        />
+        <echo message="${command.setup.install}" />
+        <exec command="${command.setup.install}" checkreturn="true" passthru="true"/>
+
+        <!-- @TODO: -->
+        <!--<property name="command.setup.mode.prd" value="${bin.n98-magerun2} &#45;&#45;root-dir=${setup.magento.dir} deploy:mode:set production"/>-->
+        <!--<echo message="${command.setup.mode.prd}"/>-->
+        <!--<exec command="${command.setup.mode.prd}" checkreturn="true" logoutput="true"/>-->
+
+    </target>
+    
+    <target name="setup:install:params"
+            hidden="true">
+
+        <!-- @TODO: set master -->
+        <property name="release.version" value="develop" override="true"/>
+        <property name="release.overwrite" value="y" override="true"/>
+        
     </target>
 
-    <target name="setup:static:data">
+    <target name="setup:static:data"
+            hidden="true">
         <mkdir dir="${application.startdir}/${static.dir}/magento"/>
-        <copy file="${application.startdir}/${live.symlink}/${magento.dir}/app/etc/env.php"
+        <move file="${setup.magento.dir}/app/etc/env.php"
               tofile="${application.startdir}/${static.dir}/magento/app/etc/env.php"
               haltonerror="true"/>
-        <copy file="${application.startdir}/${live.symlink}/${magento.dir}/pub/media"
-              tofile="${application.startdir}/${static.dir}/magento/pub/media"
+        <echo message="move ${setup.magento.dir}/pub/media to ${application.startdir}/${static.dir}/magento/pub/media"/>
+        <move file="${setup.magento.dir}/pub/media"
+              todir="${application.startdir}/${static.dir}/magento/pub/media"
               haltonerror="true"/>
-        <copy file="${application.startdir}/${live.symlink}/${magento.dir}/var/log"
-              tofile="${application.startdir}/${static.dir}/magento/var/log"
+        <echo message="move ${setup.magento.dir}/var/log to ${application.startdir}/${static.dir}/magento/var/log"/>
+        <move file="${setup.magento.dir}/var/log"
+              todir="${application.startdir}/${static.dir}/magento/var/log"
               haltonerror="true"/>
     </target>
 

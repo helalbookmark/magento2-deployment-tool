@@ -2,7 +2,8 @@
 
 <project name="Release">
 
-    <target name="release:validate:before">
+    <target name="release:validate:before"
+            hidden="true">
         <if>
             <not>
                 <isset property="${setup.done}"/>
@@ -42,18 +43,18 @@
         <if>
             <contains string="${release.version}" substring="SNAPSHOT" casesensitive="false"/>
             <then>
-                <property name="release.target" value="${server.releases.dir}/${release.filename}-${release.timestamp}"/>
+                <property name="release.target" value="${application.startdir}/${releases.dir}/${release.filename}-${release.timestamp}"/>
                 <property name="command.get.project" value="${command.get.project.snapshot}"/>
                 <property name="command.build.project" value="${command.build.project.snapshot}"/>
             </then>
             <else>
-                <property name="release.target" value="${server.releases.dir}/${release.filename}" />
+                <property name="release.target" value="${application.startdir}/${releases.dir}/${release.filename}" />
                 <property name="command.get.project" value="${command.get.project.version}" override="true"/>
                 <property name="command.build.project" value="${command.build.project.version}" override="true"/>
             </else>
         </if>
 
-        <exec command="cd ${server.live.dir} &amp;&amp; cd $(readlink .) | pwd -P" outputProperty="current.version.target"/>
+        <exec command="cd ${application.startdir}/${live.symlink} &amp;&amp; cd $(readlink .) | pwd -P" outputProperty="current.version.target"/>
 
     </target>
 
@@ -120,7 +121,7 @@
             hidden="true">
 
         <symlink target="${release.target}"
-                 link="${server.live.dir}"
+                 link="${live.symlink}"
                  overwrite="true"/>
 
     </target>

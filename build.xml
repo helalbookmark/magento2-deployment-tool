@@ -15,6 +15,45 @@
         <format property="release.timestamp" pattern="%Y%m%d-%H%M"/>
     </tstamp>
 
+    <target name="help"
+            description="show help with information about the instance"
+            depends="util:properties:read">
+        <if>
+            <isset property="setup.done"/>
+            <then>
+                <echo message="**********************************************************************"/>
+                <echo message="Deployment Command:"/>
+                <echo message="**********************************************************************"/>
+                <echo message=""/>
+                <echo message="mg2-deployer release"/>
+            </then>
+            <else>
+                <echo message="**********************************************************************"/>
+                <echo message="Setup Command:"/>
+                <echo message="**********************************************************************"/>
+                <echo message=""/>
+                <echo message="mg2-deployer setup"/>
+            </else>
+        </if>
+    </target>
+
+    <target name="setup"
+            description="Setup deployment installation settings"
+            depends="util:properties:read,
+            setup:validate:before,
+            setup:project:properties,
+            setup:folder:structure,
+            setup:install:magento,
+            setup:static:data">
+
+        <delete dir="${release.target}" failonerror="true"/>
+        <append destFile="${application.startdir}/deployment-settings/project.properties" text="setup.done=1" />
+        <echo message="**********************************************************************"/>
+        <echo message="Setup Finish Successfully" />
+        <echo message="**********************************************************************"/>
+
+    </target>
+
     <target name="release"
             description="Release a new artifact version on current environment
             [release.version|skipMaintenance|skipDatabaseBackup|skipUpdateScripts|skipDeployStatic|skipCompilation]"
@@ -44,26 +83,4 @@
         <echo message="**********************************************************************"/>
     </target>
 
-    <target name="help"
-            description="show help with information about the instance"
-            depends="util:properties:read">
-
-        <if>
-            <isset property="setup.done"/>
-            <then>
-                <echo message="**********************************************************************"/>
-                <echo message="Deployment Command:"/>
-                <echo message="**********************************************************************"/>
-                <echo message=""/>
-                <echo message="mg2-deployer release"/>
-            </then>
-            <else>
-                <echo message="**********************************************************************"/>
-                <echo message="Setup Command:"/>
-                <echo message="**********************************************************************"/>
-                <echo message=""/>
-                <echo message="mg2-deployer setup"/>
-            </else>
-        </if>
-    </target>
 </project>
