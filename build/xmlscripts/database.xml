@@ -3,32 +3,28 @@
 <project name="Database">
 
     <target name="database:backup:create"
-            description="Create database backup before switching to a new version"
+            depends="util:live:dir:properties"
             unless="skipDatabaseBackup"
             hidden="true">
-
-        <property name="magerun.path" value="${current.version.target}/${bin.magerun98}" override="true"/>
-        <exec command="${magerun.path}" returnProperty="magerun.return"/>
         <if>
-            <equals arg1="${magerun.return}" arg2="0"/>
+            <istrue value="${live.magento.dir.exists}"/>
             <then>
-                <property name="database.dump.filename" value="${server.backup.dir}/backup_${release.timestamp}.sql.gz"/>
-                <property name="command.create.dump"
-                          value="cd ${current.version.target} &amp;&amp; ${bin.magerun98} db:dump --compression='gzip' ${database.dump.filename}" />
+                <basename file="${live.dir}" property="live.dir.basename"/>
+                <exec command="echo ${live.dir.basename} | tr . -" outputProperty="live.dir.basename" checkreturn="true"/>
 
-                <echo message="${command.create.dump}" />
-                <exec command="${command.create.dump}" logoutput="true" checkreturn="true" outputProperty="command.create.dump.output"/>
-
-                <phingcall target="util:command:checkoutput">
-                    <property name="command.output" value="${command.create.dump.output}" override="true" />
+                <property name="database.dump.filename" value="${application.startdir}/${backup.dir}/backup_${live.dir.basename}_${release.timestamp}.sql.gz"/>
+                <property name="command.database.dump" value="${bin.n98-magerun2} --root-dir=${live.dir}/${magento.dir} db:dump --compression='gzip' ${database.dump.filename}"/>
+                <echo message="${command.database.dump}"/>
+                <exec command="${command.database.dump}" outputProperty="command.database.dump.output"
+                      checkreturn="true" logoutput="false" />
+                <phingcall target="util:check:output">
+                    <property name="check.output" value="${command.database.dump.output}" override="true" />
                 </phingcall>
             </then>
             <else>
-                <echo message="Skip database backup as magerun does not exist"/>
+                <echo message="Database dump skipped. Live magento dir not found."/>
             </else>
         </if>
-
-
     </target>
 
 </project>

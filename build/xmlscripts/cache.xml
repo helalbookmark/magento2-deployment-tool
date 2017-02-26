@@ -4,56 +4,62 @@
 
     <target name="cache:clean:all"
             description="Clear all caches"
-            depends="cache:magento:clean,
+            depends="util:properties:read,
+                cache:magento:clean,
                 cache:opcache:restart,
-                cache:varnish:restart"
-            hidden="true">
+                cache:varnish:restart">
 
-        <echo message="All Caches restarted"/>
+        <echo message="All caches cleaned"/>
     </target>
 
     <target name="cache:magento:clean"
-            description="Clear magento cache"
+            depends="util:live:dir:properties"
             hidden="true">
-
-        <property name="cache.magento.bin" value="${release.target}/${bin.magento}"/>
         <if>
-            <available property="cache.magento.bin.available" file="${cache.magento.bin}"/>
+            <istrue value="${live.magento.dir.exists}"/>
             <then>
-                <echo message="${cache.magento.bin} cache:clean"/>
-                <exec command="${cache.magento.bin} cache:clean" checkreturn="true" logoutput="true" />
+                <property name="command.cache.magento.clean" value="${bin.n98-magerun2} --root-dir=${live.dir}/${magento.dir} cache:clean"/>
+                <echo message="${command.cache.magento.clean}"/>
+                <exec command="${command.cache.magento.clean}" outputProperty="command.cache.magento.clean.output"
+                      checkreturn="true" logoutput="true" />
+                <phingcall target="util:check:output">
+                    <property name="check.output" value="${command.cache.magento.clean.output}" override="true" />
+                </phingcall>
             </then>
             <else>
-                <echo message="${cache.magento.bin} not available to execute cache:clean command"/>
+                <echo message="Cache clean skipped. Live magento dir not found."/>
             </else>
         </if>
     </target>
 
     <target name="cache:opcache:restart"
-            description="clear OpCache"
-            hidden="true"
-            unless="skipRestartOpcache">
-
-        <echo message="${command.opcache.restart}"/>
-        <exec command="${command.opcache.restart}" logoutput="true" checkreturn="true"/>
+            unless="skipRestartOpcache"
+            hidden="true">
+        <if>
+            <istrue value="${opcache.enabled}"/>
+            <then>
+                <echo message="${command.opcache.restart}"/>
+                <exec command="${command.opcache.restart}" logoutput="true" checkreturn="true"/>
+            </then>
+            <else>
+                <echo message="OpCache not enabled"/>
+            </else>
+        </if>
     </target>
 
     <target name="cache:varnish:restart"
-            description="clear Varnish"
-            hidden="true"
-            unless="skipRestartVarnish">
-
+            unless="skipRestartVarnish"
+            hidden="true">
         <if>
-            <istrue value="${varnish.installed}"/>
+            <istrue value="${varnish.enabled}"/>
             <then>
                 <echo message="${command.varnish.restart}"/>
                 <exec command="${command.varnish.restart}" logoutput="true" checkreturn="true"/>
             </then>
             <else>
-                <echo message="Varnish not installed"/>
+                <echo message="Varnish not enabled"/>
             </else>
         </if>
     </target>
-
 
 </project>

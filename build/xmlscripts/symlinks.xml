@@ -6,12 +6,30 @@
             description="Set project symlinks to static folders in server"
             hidden="true">
 
+        <symlink link="${release.target}/${magento.dir}/app" overwrite="true">
+            <fileset dir="${application.startdir}/${static.dir}/magento/app">
+                <include name="**/*.*"/>
+            </fileset>
+        </symlink>
+
+        <symlink link="${release.target}/${magento.dir}/pub" overwrite="true">
+            <fileset dir="${application.startdir}/${static.dir}/magento/pub">
+                <include name="*" />
+            </fileset>
+        </symlink>
+
+        <symlink link="${release.target}/${magento.dir}/var" overwrite="true">
+            <fileset dir="${application.startdir}/${static.dir}/magento/var">
+                <include name="*" />
+            </fileset>
+        </symlink>
+
         <symlink link="${release.target}/${magento.dir}" overwrite="true">
-            <fileset dir="${static.dir}/magento">
-                <patternset id="magento.static.symlinks">
-                    <exclude name="${static.excludes}"/>
-                    <include name="${static.includes}"/>
-                </patternset>
+            <fileset dir="${application.startdir}/${static.dir}/magento">
+                <include name="*"/>
+                <exclude name="app"/>
+                <exclude name="pub"/>
+                <exclude name="var"/>
             </fileset>
         </symlink>
     </target>

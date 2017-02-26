@@ -8,21 +8,11 @@
 
         <property file="${application.startdir}/deployment-settings/project.properties"/>
         <property file="${phing.dir}/build/config/default.properties"/>
-
-    </target>
-
-    <target name="util:scripts:postRelease"
-            hidden="true">
-
-        <property name="command.post.scripts" value="`which bash` ${custom.post-script.path}"/>
-        <echo message="${command.post.scripts}"/>
-        <exec command="${command.post.scripts}" logoutput="true" />
     </target>
 
     <target name="util:releases:cleanup"
             description="Remove old releases that are no longer needed"
             hidden="true">
-
         <if>
             <and>
                 <isset property="releases.keep"/>
@@ -32,14 +22,13 @@
             </and>
             <then>
                 <exec command="expr ${releases.keep} + 1" outputProperty="releases.keep"/>
-                <property name="command.releases.to.delete" value="ls -t  | tail -n +${releases.keep}"/>
+                <property name="command.releases.to.delete" value="ls -t | tail -n +${releases.keep}"/>
                 <echo message="Old releases to delete:"/>
-                <exec command="cd ${server.releases.dir} &amp;&amp; ${command.releases.to.delete}" logoutput="true"/>
+                <exec command="cd ${application.startdir}/${releases.dir} &amp;&amp; ${command.releases.to.delete}" logoutput="true"/>
                 <echo message=""/>
-                <exec command="cd ${server.releases.dir} &amp;&amp; rm -rf `${command.releases.to.delete}`" logoutput="true"/>
+                <exec command="cd ${application.startdir}/${releases.dir} &amp;&amp; rm -rf `${command.releases.to.delete}`" logoutput="true"/>
             </then>
         </if>
-
         <if>
             <and>
                 <isset property="backup.keep"/>
@@ -49,40 +38,67 @@
             </and>
             <then>
                 <exec command="expr ${backup.keep} + 1" outputProperty="backup.keep"/>
-                <property name="command.backup.to.delete" value="ls -t  | tail -n +${backup.keep}"/>
+                <property name="command.backup.to.delete" value="ls -t | tail -n +${backup.keep}"/>
                 <echo message="Old backups to delete:"/>
-                <exec command="cd ${server.backup.dir} &amp;&amp; ${command.backup.to.delete}" logoutput="true"/>
+                <exec command="cd ${application.startdir}/${backup.dir} &amp;&amp; ${command.backup.to.delete}" logoutput="true"/>
                 <echo message=""/>
-                <exec command="cd ${server.backup.dir} &amp;&amp; rm -rf `${command.backup.to.delete}`" logoutput="true"/>
+                <exec command="cd ${application.startdir}/${backup.dir} &amp;&amp; rm -rf `${command.backup.to.delete}`" logoutput="true"/>
             </then>
         </if>
-
     </target>
 
-    <target name="util:command:checkoutput"
+    <target name="util:live:dir:properties"
+            hidden="true">
+        <if>
+            <and>
+                <isset property="live.dir.before.maintenance"/>
+                <not>
+                    <isfalse value="${live.dir.before.maintenance}"/>
+                </not>
+            </and>
+            <then>
+                <property name="live.dir" value="${live.dir.before.maintenance}" override="true"/>
+            </then>
+            <else>
+                <property name="live.dir" value="${application.startdir}/${live.symlink}" override="true"/>
+            </else>
+        </if>
+        <exec command="${bin.n98-magerun2} --root-dir=${live.dir}/${magento.dir} sys:info" returnProperty="check.magento.info.return"/>
+        <if>
+            <not>
+                <equals arg1="${check.magento.info.return}" arg2="0"/>
+            </not>
+            <then>
+                <property name="live.magento.dir.exists" value="false" override="true"/>
+            </then>
+            <else>
+                <property name="live.magento.dir.exists" value="true" override="true"/>
+            </else>
+        </if>
+    </target>
+
+    <target name="util:check:output"
             description="Checks that output from command does not contain errors"
             hidden="true">
-
         <if>
             <and>
                 <not>
-                    <contains string="${command.output}" substring="errors: 0" casesensitive="false"/>
+                    <contains string="${check.output}" substring="errors: 0" casesensitive="false"/>
                 </not>
                 <or>
-                    <contains string="${command.output}" substring="error" casesensitive="false"/>
-                    <contains string="${command.output}" substring="denied" casesensitive="false"/>
-                    <contains string="${command.output}" substring="failed" casesensitive="false"/>
+                    <contains string="${check.output}" substring="error" casesensitive="false"/>
+                    <contains string="${check.output}" substring="denied" casesensitive="false"/>
+                    <contains string="${check.output}" substring="failed" casesensitive="false"/>
                 </or>
             </and>
             <then>
-                <echo message="${command.output}" level="error"/>
+                <echo message="${check.output}" level="error"/>
                 <fail message="Command failed" />
             </then>
             <else>
-                <echo message="Command output does not contain any errors" />
+                <echo message="Output does not contain any errors" />
             </else>
         </if>
-
     </target>
 
 </project>

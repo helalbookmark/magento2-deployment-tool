@@ -6,7 +6,7 @@
             hidden="true">
         <if>
             <not>
-                <isset property="${setup.done}"/>
+                <isset property="setup.done"/>
             </not>
             <then>
                 <echo level="error" message="Please run the setup install first:"/>
@@ -16,10 +16,18 @@
         </if>
     </target>
 
-    <target name="release:get:properties"
-            description="Get release specific properties"
+    <target name="release:get:project"
+            depends="release:get:properties,
+            release:target:validate"
             hidden="true">
 
+        <echo message="${command.get.project}" />
+        <exec command="${command.get.project}" logoutput="true" checkreturn="true"/>
+
+    </target>
+
+    <target name="release:get:properties"
+            hidden="true">
         <if>
             <isset property="release.version"/>
             <then>
@@ -29,7 +37,6 @@
                 <input propertyName="release.version" message="Please specify the release version: "/>
             </else>
         </if>
-
         <if>
             <contains string="${release.version}" substring="/"/>
             <then>
@@ -39,9 +46,11 @@
                 <property name="release.filename" value="${release.version}"/>
             </else>
         </if>
-
         <if>
-            <contains string="${release.version}" substring="SNAPSHOT" casesensitive="false"/>
+            <or>
+                <contains string="${release.version}" substring="SNAPSHOT" casesensitive="false"/>
+                <contains string="${release.version}" substring="develop" casesensitive="false"/>
+            </or>
             <then>
                 <property name="release.target" value="${application.startdir}/${releases.dir}/${release.filename}-${release.timestamp}"/>
                 <property name="command.get.project" value="${command.get.project.snapshot}"/>
@@ -53,33 +62,28 @@
                 <property name="command.build.project" value="${command.build.project.version}" override="true"/>
             </else>
         </if>
-
-        <exec command="cd ${application.startdir}/${live.symlink} &amp;&amp; cd $(readlink .) | pwd -P" outputProperty="current.version.target"/>
-
     </target>
 
     <target name="release:target:validate"
-            description="Validate that the new version can be deployed"
             hidden="true">
-
         <if>
-            <available property="releaseAlreadyExisting" file="${release.target}"/>
+            <available property="release.version.exists" file="${release.target}"/>
             <then>
                 <if>
                     <not>
                         <isset property="release.overwrite"/>
                     </not>
                     <then>
-                        <input propertyName="release.overwrite" message="The release target ${release.target} already exists. Would you like to overwrite this version?" defaultValue="y" validArgs="y,n"/>
+                        <input propertyName="release.overwrite"
+                               message="The release target ${release.target} already exists. Would you like to overwrite this version?"
+                               defaultValue="y" validArgs="y,n"/>
                     </then>
                 </if>
                 <if>
                     <equals arg1="${release.overwrite}" arg2="y"/>
                     <then>
                         <echo message="Removing existing old release with same name"/>
-                        <property name="command.delete.samerelease" value="rm -rf ${release.target}"/>
-                        <echo message="${command.delete.samerelease}"/>
-                        <exec command="${command.delete.samerelease}" checkreturn="true" logoutput="true"/>
+                        <delete dir="${release.target}" failonerror="true"/>
                     </then>
                     <else>
                         <fail message="${release.target} already exists and cannot be overwritten"/>
@@ -93,38 +97,23 @@
 
     </target>
 
-    <target name="release:get:project"
-            description="git pull"
-            depends="release:get:properties, release:target:validate"
-            hidden="true">
-
-        <echo message="${command.get.project}" />
-        <exec command="${command.get.project}" logoutput="true" checkreturn="true"/>
-
-    </target>
-
     <target name="release:build:project"
-            description="Build a new project version package"
             hidden="true">
-
-        <echo message="cd ${release.target} &amp;&amp; ${command.build.project}" />
-        <exec command="cd ${release.target} &amp;&amp; ${command.build.project}" logoutput="false" checkreturn="true" outputProperty="command.build.project.output"/>
-
-        <phingcall target="util:command:checkoutput">
-            <property name="command.output" value="${command.build.project.output}" override="true" />
+        <property name="command.release.build" value="cd ${release.target} &amp;&amp; ${command.build.project}"/>
+        <echo message="${command.release.build}" />
+        <exec command="${command.release.build}"
+              outputProperty="command.release.build.output"
+              logoutput="false" checkreturn="true" />
+        <phingcall target="util:check:output">
+            <property name="check.output" value="${command.release.build.output}" override="true" />
         </phingcall>
-
     </target>
 
-    <target name="release:newVersion:set"
-            description="update live version path with the new release"
+    <target name="release:scripts:after"
             hidden="true">
-
-        <symlink target="${release.target}"
-                 link="${live.symlink}"
-                 overwrite="true"/>
-
+        <property name="command.release.scripts.after" value="`which bash` ${scripts.release.after}"/>
+        <echo message="${command.release.scripts.after}"/>
+        <exec command="${command.release.scripts.after}" logoutput="true" />
     </target>
-
 
 </project>

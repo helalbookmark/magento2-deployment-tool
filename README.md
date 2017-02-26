@@ -1,73 +1,144 @@
 # Magento 2 Deployment tool
 
-## Setup in a Server
+## Installation
 
-0. Clone this repository into the server home dir:
-    * `$ ssh://git@stash.staempfli.com:7999/stmagento/deployment-tool.git`
-    
-0. Composer install:
-    * `$ cd deployment-tool && composer install`
+Global installation is required using composer
 
-0. Setup the local.xml template:
-    * `$ cp deployment-tool/config/env.php.dist deployment-tool/config/env.php`
-    * `$ vim deployment-tool/config/env.php`
-    * Replace the variables between {{}}
+0. Composer require:
 
-0. Setup the specific project properties:
-     * `$ cp deployment-tool/config/project.properties.dist deployment-tool/config/project.properties`
-     * `$ vim deployment-tool/config/project.properties`
-     * By default only the `git.project.repo` parameter is needed
-     * You can change the default configuration in this file. Simple set here any of the default parameters into `deployment-tool/build/config/default.properties`. This file has a higher priority and will overwrite the default values.
+	```
+	composer global require "staempfli/magento2-deployment-tool":"dev-master"
+	```
 
-0. Setup the maintenance window for this project:
-    * `$ cp -r deployment-tool/config/maintenance.dist deployment-tool/config/maintenance`
-    * `$ vim deployment-tool/config/maintenance/magento/pub/index.php`
+0. Check you global composer `bin-dir` configuration:
 
-0. Setup the static folder where all the static content specific from this server is contained. The content inside `magento`folder will be symlinked into the corresponding project `magento.dir`
-    * `$ mkdir static`
-    * Place all the Magento content inside a folder called `magento`
-    * `$ mkdir static/magento`
-    * You should add there the `media` and `var` folders but any other folders and files are also possible.
-    * You can also call your static folder with a different name, just setup the new name into the `config/project.properties`:
-        * `server.static.dir=<custom_folder_path>`
+	```
+	composer global config -l | grep "bin-dir"
 
-### Tips:
+	```
 
-* Customize default properties
-    * Almost everything can be customized via properties into the `config/project.properties`. If your server has a different configuration than defined into the `build/config/default.properties`, you can modify that setting up you desired configuration into `config/project.properties`. This file is loaded first, so it has a higher priority. 
+0. Add path from previous step into your `$PATH` configuration:
+0. Open a new console tab and check that `mg2-deployer` tool is found
 
-* Speed up release process on dev servers:
-    * For ***dev servers*** we will usually want to deploy always the most recent version of the project on the develop branch. We can skip then the question to specify a version doing the following:
-        * `$ vim config/project.properties`
-        * add the following parameter `release.version=snapshot`
-    * On this server we do not usually need to create a database backup either. We can skip his step like that:
-         * `$ vim config/project.properties`
-        * add the following parameter `skipDatabaseBackup=1`
+	```
+	which mg2-deployer
 
-## How to use it in a project
-Just go into the deployment-tool `cd deployment-tool` and use the available commands as follows:
+	```
 
-* List available targets:
-	* `$ bin/phing -l`
+## Setup
 
-* New release:
-	* `$ bin/phing release`
-	
-### TIPS:
-- To release the most recent version in develop without the need to create a new tag in the repo, you can use `snapshot` as release version.
+0. File `config.php` is required to come within the project cloned.
 
-## Prerequisites
+	* You can follow the following documentation if you do not have your project configured like that yet:
+		* [docs/setup/config-php.md](docs/setup/config-php.md)
 
-- PHP >= 5.4.*
+0. Create Database:
 
-## Recommended project structure on server:
+	```
+	 CREATE DATABASE <database_name>;
+	 CREATE USER `<database_user>`@`<database_host>` IDENTIFIED BY "<user_password>";
+     GRANT ALL ON <database_name>.* TO `<database_user>`@`<database_host>`;
+	```
+
+0. Run Setup: (this might take several minutes because of magento compilation)
+
+	```
+	mg2-deployer setup
+	```
+
+0. At the end of the process you should get a folder structure similar to this:
 
 ```
-  | - deployment-tool
+  | - backups
+  | - deployment-settings
+  | - public_html (Symlink)
   | - releases
   | - static
     | - magento
-        | - media
-        | - var
-        
+    	| - app (etc/env.php)
+    	| - pub
+    	| - var
+
 ```
+
+## Usage
+
+Tool must be executed at the path where the the project will be deployed.
+
+* Deploy new releases:
+
+	```
+	$ mg2-deployer release
+	```
+
+* List all avaiable commands:
+
+	```
+	$ mg2-deployer -list
+	```
+
+
+## Custom Configuration
+
+
+### Properties
+
+You can customise all properities according to your needs:
+
+* Properties added in `deployment-settings/project.properties` have the highest priority and will overwrite default ones
+* You can check all default properties that can be customised on:
+	* [build/config/default.properties](build/config/default.properties)
+
+### Maintenance Window
+
+You can edit the maintenance file with your own design:
+
+```
+vim deployment-settings/templates/maintenance/${magento.dir}/pub/index.php
+
+```
+
+### Static content & Symlinks
+
+* Static content that is only relevant on the server will be kept into the `static` folder.
+* Symlinks are created automatically on released project during every deployment.
+* You can add your custom files into `static/magento` and they will be automatically symlinked.
+
+### Scripts
+
+You can set custom scripts to run at the end of the release process on the following file:
+
+```
+cp deployment-settings/scripts/release-after.sh.dist deployment-settings/scripts/release-after.sh
+vim deployment-settings/scripts/release-after.sh
+```
+
+
+## Tips:
+
+### Speed up deployment process on dev-servers:
+
+* Release most recent version of develop branch `-Drelease.version=snapshot`
+* Skip database backup step `-DskipDatabaseBackup`
+* You can even set these options by default on `deployment-settings/project.properties`:
+
+    ```
+    vim deployment-settings/project.properties
+    release.version=snapshot
+    skipDatabaseBackup=1
+
+    ```
+
+## Troubleshooting
+
+####Starting compilation
+
+* **Error**: Something went wrong while compiling generated code. See the error log for details.
+
+* **Solution**: Increase php `memory_limit` configuration to 728M o 1024M
+
+
+## Prerequisites
+
+- PHP >= 7.0.*
+- MAGENTO >= 2.1.*

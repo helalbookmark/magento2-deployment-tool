@@ -3,7 +3,7 @@
 <project name="Setup">
 
     <includepath classpath="${phing.dir}/build/phpscripts/Setup"/>
-    <taskdef name="setProjectProperties" classname="setProjectPropertiesTask"/>
+    <taskdef name="setProjectProperties" classname="ProjectPropertiesTask"/>
 
     <target name="setup:validate:before"
             hidden="true">
@@ -48,12 +48,10 @@
 
     <target name="setup:install:magento"
             depends= "setup:install:params,
-            release:get:properties,
-            release:target:validate,
             release:get:project,
             release:build:project"
             hidden="true">
-        <property name="setup.magento.dir" value="${release.target}/${magento.dir}"/>
+        <property name="setup.magento.dir" value="${release.target}/${magento.dir}" />
 
         <property name="command.setup.install" value="${bin.n98-magerun2} install
         --installationFolder=${setup.magento.dir}
@@ -66,17 +64,22 @@
         <echo message="${command.setup.install}" />
         <exec command="${command.setup.install}" checkreturn="true" passthru="true"/>
 
-        <!-- @TODO: -->
-        <!--<property name="command.setup.mode.prd" value="${bin.n98-magerun2} &#45;&#45;root-dir=${setup.magento.dir} deploy:mode:set production"/>-->
-        <!--<echo message="${command.setup.mode.prd}"/>-->
-        <!--<exec command="${command.setup.mode.prd}" checkreturn="true" logoutput="true"/>-->
+    </target>
 
+    <target name="setup:mode:production"
+            hidden="true">
+        <property name="command.setup.mode.prd" value="${bin.n98-magerun2} --root-dir=${setup.magento.dir} deploy:mode:set production"/>
+        <echo message="${command.setup.mode.prd}"/>
+        <exec command="${command.setup.mode.prd}" outputProperty="command.setup.mode.prd.output" checkreturn="false" logoutput="false"/>
+        <phingcall target="util:check:output">
+            <property name="check.output" value="${command.setup.mode.prd.output}" override="true"/>
+        </phingcall>
     </target>
     
     <target name="setup:install:params"
             hidden="true">
-        <property name="release.version" value="master" override="true"/>
-        <property name="release.overwrite" value="y" override="true"/>
+        <property name="release.version" value="master"/>
+        <property name="release.overwrite" value="y"/>
     </target>
 
     <target name="setup:static:data"

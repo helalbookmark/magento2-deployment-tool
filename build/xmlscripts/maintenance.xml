@@ -2,16 +2,50 @@
 
 <project name="Maintenance">
 
-    <target name="util:maintenance:set"
+    <target name="maintenance:set"
             depends="util:properties:read"
             description="Set maintenance window"
-            unless="skipMaintenance"
-            hidden="true">
+            unless="skipMaintenance">
+
+        <exec command="cd ${application.startdir}/${live.symlink} &amp;&amp; cd $(readlink .) | pwd -P" outputProperty="live.dir.before.maintenance"/>
 
         <echo message="${maintenance.set.command}" />
         <exec command="${maintenance.set.command}" logoutput="true" checkreturn="true"/>
-        <phingcall target="cache:clean:all"/>
+        <executeTarget target="cache:clean:all"/>
+    </target>
 
+    <target name="maintenance:unset"
+            depends="util:properties:read"
+            description="Unset maintenance window"
+            unless="skipMaintenance">
+        <if>
+            <isset property="release.target"/>
+            <then>
+                <property name="latest.release.dir" value="${release.target}"/>
+            </then>
+            <else>
+                <exec command="cd ${application.startdir}/${releases.dir} &amp;&amp; ls -t | head -n 1"
+                      outputProperty="latest.release.dirname"
+                      checkreturn="true"/>
+                <property name="latest.release.dir" value="${application.startdir}/${releases.dir}/${latest.release.dirname}"/>
+            </else>
+        </if>
+        <if>
+            <or>
+                <equals arg1="${latest.release.dir}" arg2="" />
+                <not>
+                    <available property="latest.release.exists" file="${latest.release.dir}"/>
+                </not>
+            </or>
+            <then>
+                <fail message="Latest release not found: ${latest.release.dir}"/>
+            </then>
+        </if>
+        <symlink target="${latest.release.dir}"
+                 link="${application.startdir}/${live.symlink}"
+                 overwrite="true"/>
+        <property name="live.dir.before.maintenance" value="false" override="true"/>
+        <executeTarget target="cache:clean:all"/>
     </target>
 
 </project>

@@ -2,54 +2,51 @@
 
 <project name="Database">
 
-    <target name="magento:env:set"
-            description="Replace env.php configuration with an specific template"
+    <target name="magento:set:permissions"
+            unless="skipSetPermissions"
             hidden="true">
 
-        <copy file="${template.env.php}"
-              tofile="${release.target}/${magento.dir}/app/etc/env.php"
-              overwrite="true"
-              verbose="true">
-        </copy>
-
+        <property name="command.set.permissions" value="cd ${release.target}/${magento.dir} &amp;&amp; ${command.permissions}"/>
+        <echo message="${command.set.permissions}"/>
+        <exec command="${command.set.permissions}" checkreturn="true" logoutput="true"/>
     </target>
 
-    <target name="magento:setup:run"
-            description="Run all sql scripts to update the modules version"
+    <target name="magento:setup:upgrade"
             unless="skipUpdateScripts"
             hidden="true">
 
-        <property name="command.setup.run" value="cd ${release.target} &amp;&amp; ${bin.magento} setup:upgrade" />
-        <echo message="${command.setup.run}"/>
-        <exec command="${command.setup.run}" checkreturn="true" logoutput="true" outputProperty="command.setup.run.output"/>
+        <property name="command.magento.upgrade" value="${bin.n98-magerun2} --root-dir=${release.target}/${magento.dir} setup:upgrade"/>
+        <echo message="${command.magento.upgrade}"/>
+        <exec command="${command.magento.upgrade}" outputProperty="command.magento.upgrade.output" checkreturn="false" logoutput="false"/>
 
-        <phingcall target="util:command:checkoutput">
-            <property name="command.output" value="${command.setup.run.output}" override="true" />
+        <phingcall target="util:check:output">
+            <property name="check.output" value="${command.magento.upgrade.output}" override="true"/>
         </phingcall>
     </target>
 
     <target name="magento:static-content:deploy"
             description="Deploys static view files"
-            unless="skipDeployStatic"
             depends="magento:static-content:locales:set"
+            unless="skipDeployStatic"
             hidden="true">
 
-        <property name="command.static-content.deploy" value="cd ${release.target} &amp;&amp; ${bin.magento} setup:static-content:deploy ${config.stores.languages}" />
-        <echo message="${command.static-content.deploy}"/>
-        <exec command="${command.static-content.deploy}" checkreturn="true" logoutput="false" outputProperty="command.static-content.deploy.output"/>
+        <property name="command.magento.static-content"
+                  value="${bin.n98-magerun2} --root-dir=${release.target}/${magento.dir} setup:static-content:deploy ${config.stores.languages} ${command.static-content.deploy.options}"/>
+        <echo message="${command.magento.static-content}"/>
+        <exec command="${command.magento.static-content}" outputProperty="command.magento.static-content.output" checkreturn="false" logoutput="false"/>
 
-        <phingcall target="util:command:checkoutput">
-            <property name="command.output" value="${command.static-content.deploy.output}" override="true" />
+        <phingcall target="util:check:output">
+            <property name="check.output" value="${command.magento.static-content.output}" override="true"/>
         </phingcall>
     </target>
 
     <target name="magento:static-content:locales:set"
-        description="Set locales for deploying static content"
-        hidden="true">
+            description="Set locales for deploying static content"
+            hidden="true">
         <!-- Get list of all store languages to generate the static content for all of them -->
-        <exec command="cd ${release.target} &amp;&amp; ${bin.magerun98} config:get --format=json general/locale/code | grep -Po '(?&lt;=&quot;Value&quot;: &quot;)[^&quot;]*' | sort -u | xargs"
+        <exec command="${bin.n98-magerun2} --root-dir=${release.target}/${magento.dir} config:get --format=json general/locale/code | grep -Po '(?&lt;=&quot;Value&quot;: &quot;)[^&quot;]*' | sort -u | xargs"
               outputProperty="config.stores.languages"
-              checkreturn="true" />
+              checkreturn="true"/>
 
         <!-- Ensure that en_US language is always in the list -->
         <if>
@@ -63,28 +60,16 @@
     </target>
 
     <target name="magento:di:compile"
-            description="Generates all non-existing proxies and factories, and pre-compile class definitions, inheritance information and plugin definitions"
             unless="skipCompilation"
             hidden="true">
 
-        <property name="command.di.compile" value="cd ${release.target} &amp;&amp; ${bin.magento} setup:di:compile" />
-        <echo message="${command.di.compile}"/>
-        <exec command="${command.di.compile}" checkreturn="true" logoutput="false" outputProperty="command.di.compile.output"/>
+        <property name="command.magento.compile" value="${bin.n98-magerun2} --root-dir=${release.target}/${magento.dir} setup:di:compile"/>
+        <echo message="${command.magento.compile}"/>
+        <exec command="${command.magento.compile}" outputProperty="command.magento.compile.output" checkreturn="false" logoutput="false"/>
 
-        <phingcall target="util:command:checkoutput">
-            <property name="command.output" value="${command.di.compile.output}" override="true" />
+        <phingcall target="util:check:output">
+            <property name="check.output" value="${command.magento.compile.output}" override="true"/>
         </phingcall>
-    </target>
-
-    <target name="magento:set:permissions"
-            description="Set right permissions for folders and files"
-            unless="skipSetPermissions"
-            hidden="true">
-
-        <property name="command.set.permissions" value="cd ${release.target}/${magento.dir} &amp;&amp; ${command.permissions}" />
-        <echo message="${command.set.permissions}"/>
-        <exec command="${command.set.permissions}" checkreturn="true" logoutput="true"/>
-
     </target>
 
 </project>

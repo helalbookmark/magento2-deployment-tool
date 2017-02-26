@@ -1,7 +1,7 @@
 <?php
 
 /**
- * setProjectPropertiesTask
+ * ProjectPropertiesTask
  *
  * @copyright Copyright (c) 2016 Staempfli AG
  * @author    juan.alonso@staempfli.com
@@ -10,7 +10,7 @@ require_once "phing/Task.php";
 require_once "phing/input/InputRequest.php";
 require_once 'phing/system/io/PhingFile.php';
 
-class setProjectPropertiesTask extends Task
+class ProjectPropertiesTask extends Task
 {
     protected $projectProperties = [
         "git.repo.url" => [],
