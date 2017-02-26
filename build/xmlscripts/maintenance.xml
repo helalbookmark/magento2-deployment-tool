@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<project name="Maintenance" basedir="../..">
+<project name="Maintenance">
 
     <target name="util:maintenance:set"
             depends="util:properties:read"

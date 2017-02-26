@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<project name="Util" basedir="../..">
+<project name="Util">
 
     <target name="util:properties:read"
             description="read all required properties files"
             hidden="true">
 
-        <property file="${application.startdir}/config/project.properties"/>
-        <property file="${phing.home}/build/config/default.properties"/>
+        <property file="${application.startdir}/deployment-settings/project.properties"/>
+        <property file="${phing.dir}/build/config/default.properties"/>
 
     </target>
 

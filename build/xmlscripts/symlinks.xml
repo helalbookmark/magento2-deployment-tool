@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project name="Symlinks">
+
+    <target name="symlinks:set"
+            description="Set project symlinks to static folders in server"
+            hidden="true">
+
+        <symlink link="${release.target}/${magento.dir}" overwrite="true">
+            <fileset dir="${static.dir}/magento">
+                <patternset id="magento.static.symlinks">
+                    <exclude name="${static.excludes}"/>
+                    <include name="${static.includes}"/>
+                </patternset>
+            </fileset>
+        </symlink>
+    </target>
+
+</project>

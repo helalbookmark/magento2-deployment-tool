@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<project name="Database" basedir="../..">
+<project name="Database">
 
     <target name="database:backup:create"
             description="Create database backup before switching to a new version"

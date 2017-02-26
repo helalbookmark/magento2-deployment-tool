@@ -2,13 +2,14 @@
 
 <project name="DeploymentTool" default="help">
 
-    <import file="build/xmlscripts/util.xml"/>
-    <import file="build/xmlscripts/magento.xml"/>
-    <import file="build/xmlscripts/database.xml"/>
-    <import file="build/xmlscripts/release.xml"/>
-    <import file="build/xmlscripts/webtools.xml"/>
-    <import file="build/xmlscripts/maintenance.xml"/>
-    <import file="build/xmlscripts/cache.xml"/>
+    <import file="${phing.dir}/build/xmlscripts/util.xml"/>
+    <import file="${phing.dir}/build/xmlscripts/setup.xml"/>
+    <import file="${phing.dir}/build/xmlscripts/magento.xml"/>
+    <import file="${phing.dir}/build/xmlscripts/database.xml"/>
+    <import file="${phing.dir}/build/xmlscripts/release.xml"/>
+    <import file="${phing.dir}/build/xmlscripts/symlinks.xml"/>
+    <import file="${phing.dir}/build/xmlscripts/maintenance.xml"/>
+    <import file="${phing.dir}/build/xmlscripts/cache.xml"/>
 
     <tstamp>
         <format property="release.timestamp" pattern="%Y%m%d-%H%M"/>
@@ -18,10 +19,11 @@
             description="Release a new artifact version on current environment
             [release.version|skipMaintenance|skipDatabaseBackup|skipUpdateScripts|skipDeployStatic|skipCompilation]"
             depends="util:properties:read,
+            release:validate:before,
             release:get:project,
             release:build:project,
             magento:env:set,
-            webtools:symlinks:set,
+            symlinks:set,
             magento:set:permissions,
             util:maintenance:set,
             database:backup:create,
@@ -38,7 +40,7 @@
         <echo message="**********************************************************************"/>
         <echo message="Version: ${release.version}"/>
         <echo message="Release path: ${release.target}"/>
-        <echo message="Live path: ${server.live.dir}"/>
+        <echo message="Live path: ${live.symlink}"/>
         <echo message="**********************************************************************"/>
     </target>
 
@@ -46,13 +48,22 @@
             description="show help with information about the instance"
             depends="util:properties:read">
 
-        <echo message="**********************************************************************"/>
-        <echo message="Installation Directory:            ${server.live.dir}" level="warning"/>
-        <echo message="**********************************************************************"/>
-
-        <echo message="Deployment Process:"/>
-        <echo message=""/>
-        <echo message="1. bin/phing release"/>
-        <echo message="**********************************************************************"/>
+        <if>
+            <isset property="setup.done"/>
+            <then>
+                <echo message="**********************************************************************"/>
+                <echo message="Deployment Command:"/>
+                <echo message="**********************************************************************"/>
+                <echo message=""/>
+                <echo message="mg2-deployer release"/>
+            </then>
+            <else>
+                <echo message="**********************************************************************"/>
+                <echo message="Setup Command:"/>
+                <echo message="**********************************************************************"/>
+                <echo message=""/>
+                <echo message="mg2-deployer setup"/>
+            </else>
+        </if>
     </target>
 </project>

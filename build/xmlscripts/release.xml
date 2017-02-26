@@ -1,6 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<project name="Release" basedir="../..">
+<project name="Release">
+
+    <target name="release:validate:before">
+        <if>
+            <not>
+                <isset property="${setup.done}"/>
+            </not>
+            <then>
+                <echo level="error" message="Please run the setup install first:"/>
+                <echo level="error" message="mg2-deployer setup"/>
+                <fail message="Deployment tool setup not done"/>
+            </then>
+        </if>
+    </target>
 
     <target name="release:get:properties"
             description="Get release specific properties"
