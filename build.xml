@@ -61,7 +61,7 @@
 
     <target name="release"
             description="Release a new artifact version on current environment
-            [release.version|skipMaintenance|skipDatabaseBackup|skipUpdateScripts|skipDeployStatic|skipCompilation]"
+            [release.version|keepMaintenanceSet|skipDatabaseBackup|skipUpdateScripts|skipDeployStatic|skipCompilation]"
             depends="util:properties:read,
             release:validate:before,
             release:get:project,
@@ -73,7 +73,7 @@
             magento:setup:upgrade,
             magento:static-content:deploy,
             magento:di:compile,
-            maintenance:unset,
+            release:live:set,
             release:scripts:after,
             util:releases:cleanup">
 

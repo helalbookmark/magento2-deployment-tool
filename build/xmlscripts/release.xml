@@ -116,4 +116,39 @@
         <exec command="${command.release.scripts.after}" logoutput="true" />
     </target>
 
+    <target name="release:live:set"
+            depends="util:properties:read"
+            description="Set a specific version as live version"
+            unless="keepMaintenanceSet">
+        <if>
+            <not>
+                <isset property="release.target"/>
+            </not>
+            <then>
+                <exec command="cd ${application.startdir}/${releases.dir} &amp;&amp; ls -t | head -n 1"
+                      outputProperty="latest.release.version"
+                      checkreturn="true"/>
+
+                <input message="Release version to set live: " propertyName="release.version" defaultValue="${latest.release.version}"/>
+                <property name="release.target" value="${application.startdir}/${releases.dir}/${release.version}"/>
+            </then>
+        </if>
+        <if>
+            <or>
+                <equals arg1="${release.target}" arg2="" />
+                <not>
+                    <available property="release.target.exists" file="${release.target}"/>
+                </not>
+            </or>
+            <then>
+                <fail message="Release target not found: ${release.target}"/>
+            </then>
+        </if>
+        <symlink target="${release.target}"
+                 link="${application.startdir}/${live.symlink}"
+                 overwrite="true"/>
+        <property name="live.dir.before.maintenance" value="false" override="true"/>
+        <executeTarget target="cache:clean:all"/>
+    </target>
+
 </project>
