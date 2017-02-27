@@ -6,7 +6,7 @@ Best practise to keep the Magento2 `config.php` file in your project repo is to 
 
 	```
 	| - symlinks
-		| - magento
+		| - <magento_dir> (omit if magento installed on project root)
 			| - app
 				| - etc
 					| - config.php

@@ -19,7 +19,7 @@ class ProjectPropertiesTask extends Task
     protected $projectProperties = [
         "git.repo.url" => ['description' => 'Project git url to clone from'],
         "live.symlink" => ['description' => 'Target dir where live release will be symlinked'],
-        "magento.dir" => ['description' => 'Magento dir into the Project root. Set "." if your Magento installation is directly into the Project root'],
+        "magento.dir" => ['description' => 'Magento dir into the project root. Set "." if magento is installed on project root'],
         "opcache.enabled" => ['valid_values' => [1, 0]],
         "varnish.enabled" => ['valid_values' =>[1, 0]],
     ];
