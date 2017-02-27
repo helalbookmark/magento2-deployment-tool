@@ -116,7 +116,7 @@
         <exec command="${command.release.scripts.after}" logoutput="true" />
     </target>
 
-    <target name="release:live:set"
+    <target name="release:live:replace"
             depends="util:properties:read"
             description="Set a specific version as live version"
             unless="keepMaintenanceSet">

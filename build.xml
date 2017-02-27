@@ -73,7 +73,7 @@
             magento:setup:upgrade,
             magento:static-content:deploy,
             magento:di:compile,
-            release:live:set,
+            release:live:replace,
             release:scripts:after,
             util:releases:cleanup">
 
