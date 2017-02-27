@@ -15,7 +15,7 @@
 
     <target name="maintenance:unset"
             depends="release:live:replace"
-            description="Unset maintenance window">
+            description="Replace maintenance window with a specific released version">
 
         <echo message="maintenance page unset"/>
     </target>

@@ -118,7 +118,7 @@
 
     <target name="release:live:replace"
             depends="util:properties:read"
-            description="Set a specific version as live version"
+            description="Set a specific release as live version"
             unless="keepMaintenanceSet">
         <if>
             <not>
