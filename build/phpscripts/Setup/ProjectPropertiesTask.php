@@ -12,53 +12,75 @@ require_once 'phing/system/io/PhingFile.php';
 
 class ProjectPropertiesTask extends Task
 {
+    /**
+     * property_name => [property_data]
+     * @var array
+     */
     protected $projectProperties = [
-        "git.repo.url" => [],
-        "live.symlink" => [],
-        "magento.dir" => [],
-        "opcache.enabled" => [1, 0],
-        "varnish.enabled" => [1, 0],
-
+        "git.repo.url" => ['description' => 'Project git url to clone from'],
+        "live.symlink" => ['description' => 'Target dir where live release will be symlinked'],
+        "magento.dir" => ['description' => 'Magento dir into the Project root. Set "." if your Magento installation is directly into the Project root'],
+        "opcache.enabled" => ['valid_values' => [1, 0]],
+        "varnish.enabled" => ['valid_values' =>[1, 0]],
     ];
 
     public function main()
     {
         $this->log("Input project properties");
-        foreach ($this->projectProperties as $property => $validValues) {
-            $inputValue = $this->promptProperty($property, $validValues);
+        foreach ($this->projectProperties as $property => $propertyData) {
+            $inputValue = $this->promptProperty($property, $propertyData);
             $this->project->setUserProperty($property, $inputValue);
         }
         $this->exportProjectProperties();
-
     }
 
-    protected function promptProperty($property, array $validValues)
+    /**
+     * @param $property
+     * @param array $propertyData
+     * @return string
+     */
+    protected function promptProperty($property, array $propertyData)
     {
-        $currentValue = $this->project->getProperty($property);
-        $promptText = $this->getPromptTextToAsk($property, $currentValue, $validValues);
+        $defaultValue = $this->project->getProperty($property);
+        $promptText = $this->getPromptTextToAsk($property, $defaultValue, $propertyData);
+        $promptText = PHP_EOL . $promptText;
         do {
             $inputValue = $this->getInputRequest($promptText);
             if ($inputValue === "") {
-                $inputValue = $currentValue;
+                $inputValue = $defaultValue;
             }
-            $isValid = $this->isInputValid($inputValue, $validValues);
+            $isValid = $this->isInputValid($inputValue, $propertyData);
         } while (!$isValid);
 
         return $inputValue;
     }
 
-    protected function getPromptTextToAsk($property, $currentValue = "", array $validValues = [])
+    /**
+     * @param $property
+     * @param string $defaultValue
+     * @param array $propertyData
+     * @return string
+     */
+    protected function getPromptTextToAsk($property, $defaultValue = "", array $propertyData = [])
     {
-        $promptText = sprintf('%s:', $property);
-        if ("" !== $currentValue && null !== $currentValue) {
-            $promptText .= sprintf(' [%s]', $currentValue);
+        $promptText = "";
+        if (isset($propertyData['description'])) {
+            $promptText .= $propertyData['description'] . PHP_EOL;
         }
-        if ($validValues) {
-            $promptText .= sprintf(' (%s)', implode(', ', $validValues));
+        $promptText .= sprintf('-> %s:', $property);
+        if ("" !== $defaultValue && null !== $defaultValue) {
+            $promptText .= sprintf(' [%s]', $defaultValue);
+        }
+        if (isset($propertyData['valid_values']) && is_array($propertyData['valid_values'])) {
+            $promptText .= sprintf(' (%s)', implode(', ', $propertyData['valid_values']));
         }
         return $promptText;
     }
 
+    /**
+     * @param $promptText
+     * @return mixed
+     */
     protected function getInputRequest($promptText)
     {
         $request = new InputRequest($promptText);
@@ -66,12 +88,18 @@ class ProjectPropertiesTask extends Task
         return $request->getInput();
     }
 
-    protected function isInputValid($inputValue, array $validValues)
+    /**
+     * @param $inputValue
+     * @param array $propertyData
+     * @return bool
+     */
+    protected function isInputValid($inputValue, array $propertyData)
     {
+        $validValues = $propertyData['valid_values']??null;
         if (!$validValues && "" !== $inputValue) {
             return true;
         }
-        if (in_array($inputValue, $validValues)) {
+        if (is_array($validValues) && in_array($inputValue, $validValues)) {
             return true;
         }
         return false;
@@ -89,6 +117,11 @@ class ProjectPropertiesTask extends Task
         $this->log(sprintf("Properties saved in: %s", $projectPropertiesFile));
     }
 
+    /**
+     * @param $content
+     * @param $targetFile
+     * throw BuildException
+     */
     protected function putContentInFile($content, $targetFile)
     {
         $parentDir = new PhingFile(dirname($targetFile));
