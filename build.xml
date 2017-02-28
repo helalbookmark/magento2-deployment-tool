@@ -46,17 +46,13 @@
             setup:validate:before,
             setup:project:properties,
             setup:folder:structure,
-            setup:install:magento,
-            setup:mode:production,
-            setup:static:data"
+            setup:magento:data"
             hidden="true">
 
-        <delete dir="${release.target}" failonerror="true"/>
         <append destFile="${application.startdir}/deployment-settings/project.properties" text="setup.done=1" />
-
-        <echo message="**********************************************************************"/>
-        <echo message="Setup Finish Successfully" level="warning" />
-        <echo message="**********************************************************************"/>
+        <echo message="****************************"/>
+        <echo message="Setup Finish Successfully" />
+        <echo message="****************************"/>
     </target>
 
     <target name="release"
@@ -77,13 +73,13 @@
             release:scripts:after,
             util:releases:cleanup">
 
-        <echo message="**********************************************************************"/>
-        <echo message="New version successfully released" level="warning"/>
-        <echo message="**********************************************************************"/>
+        <echo message="*******************************************"/>
+        <echo message="New version successfully released"/>
+        <echo message="*******************************************"/>
         <echo message="Version: ${release.version}"/>
         <echo message="Release path: ${release.target}"/>
         <echo message="Live path: ${live.symlink}"/>
-        <echo message="**********************************************************************"/>
+        <echo message="********************************************"/>
     </target>
 
 </project>

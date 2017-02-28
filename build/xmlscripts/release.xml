@@ -23,7 +23,6 @@
 
         <echo message="${command.get.project}" />
         <exec command="${command.get.project}" logoutput="true" checkreturn="true"/>
-
     </target>
 
     <target name="release:get:properties"

@@ -30,13 +30,8 @@ class ExecuteTargetTask extends Task
      */
     public function main()
     {
-        try {
-            $message = sprintf('Executing target %s', $this->target);
-            $this->log($message);
-            $this->getProject()->executeTarget($this->target);
-        } catch (BuildException $ex) {
-            $message = sprintf('Failed to execute target %s. Reason: %s', $this->target, $ex->getMessage());
-            $this->log($message, Project::MSG_ERR);
-        }
+        $message = sprintf('Executing target %s', $this->target);
+        $this->log($message);
+        $this->getProject()->executeTarget($this->target);
     }
 }

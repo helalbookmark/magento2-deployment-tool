@@ -8,18 +8,6 @@
     <target name="setup:validate:before"
             hidden="true">
         <fail if="setup.done" message="Setup was already done. Please remove everything and try again."/>
-
-        <echo message="ATTENTION:" level="warning"/>
-        <echo message="This command overwrites the database selected for installation." level="warning"/>
-        <echo message="If you have data in it, create a backup to restore it after the setup process." level="warning"/>
-
-        <input message="Do you want to continue?" propertyName="setup.validate.continue" validArgs="y,n"/>
-        <if>
-            <equals arg1="${setup.validate.continue}" arg2="n"/>
-            <then>
-                <fail message="Setup installation aborted."/>
-            </then>
-        </if>
     </target>
 
     <target name="setup:project:properties"
@@ -44,62 +32,92 @@
               tofile="${application.startdir}/deployment-settings/templates/maintenance/${magento.dir}/pub/index.php"
               haltonerror="true"/>
         <symlink target="${application.startdir}/${maintenance.page}" link="${application.startdir}/${live.symlink}" overwrite="true"/>
+
+        <mkdir dir="${application.startdir}/${static.dir}/magento/var/log" />
     </target>
 
-    <target name="setup:install:magento"
-            depends= "setup:install:params,
+    <target name="setup:magento:data"
+            hidden="true">
+        <input message="Do you want to set Magento data?" propertyName="setup.magento.data.confirmation" validArgs="y,n"/>
+        <if>
+            <equals arg1="${setup.magento.data.confirmation}" arg2="y"/>
+            <then>
+                <executeTarget target="setup:magento:static:data"/>
+            </then>
+            <else>
+                <echo message="-----------------------" level="warning"/>
+                <echo message="Magento data not set   " level="warning"/>
+                <echo message="-----------------------" level="warning"/>
+                <echo message="Please set the following manually:" level="warning"/>
+                <echo message="- create 'env.php' into -> ${application.startdir}/${static.dir}/magento/app/etc/env.php" level="warning"/>
+                <echo message="- create 'media' into -> ${application.startdir}/${static.dir}/magento/pub/media" level="warning"/>
+                <echo message="- import dump in database" level="warning"/>
+            </else>
+        </if>
+    </target>
+
+    <target name="setup:magento:static:data"
+            depends="setup:magento:confirmation,
+            setup:release:params,
             release:get:project,
-            release:build:project"
+            release:build:project,
+            setup:magento:install"
             hidden="true">
-        <property name="setup.magento.dir" value="${release.target}/${magento.dir}" />
 
-        <property name="command.setup.install" value="${bin.n98-magerun2} install
-        --installationFolder=${setup.magento.dir}
-        --noDownload
-        --forceUseDb=true
-        --installSampleData=no
-        --useDefaultConfigParams=no
-        --replaceHtaccessFile=n"
-        />
-        <echo message="${command.setup.install}" />
-        <exec command="${command.setup.install}" checkreturn="true" passthru="true"/>
+        <copy file="${release.target}/${magento.dir}/app/etc/env.php"
+              tofile="${application.startdir}/${static.dir}/magento/app/etc/env.php">
+            <filterchain>
+                <replaceregexp>
+                    <regexp pattern="'MAGE_MODE' =&gt; 'default'" replace="'MAGE_MODE' =&gt; 'production'"/>
+                </replaceregexp>
+            </filterchain>
+        </copy>
 
+        <copy todir="${application.startdir}/${static.dir}/magento/pub/media">
+            <fileset dir="${release.target}/${magento.dir}/magento/pub/media">
+                <include name="**"/>
+            </fileset>
+        </copy>
+
+        <delete dir="${release.target}" failonerror="true"/>
     </target>
 
-    <target name="setup:mode:production"
+    <target name="setup:magento:confirmation"
             hidden="true">
-        <property name="command.setup.mode.prd" value="${bin.n98-magerun2} --root-dir=${setup.magento.dir} deploy:mode:set production"/>
-        <echo message="${command.setup.mode.prd}"/>
-        <exec command="${command.setup.mode.prd}" outputProperty="command.setup.mode.prd.output" checkreturn="false" logoutput="false"/>
-        <phingcall target="util:check:output">
-            <property name="check.output" value="${command.setup.mode.prd.output}" override="true"/>
-        </phingcall>
+        <echo message="---------------------" level="warning"/>
+        <echo message="     ATTENTION       " level="warning"/>
+        <echo message="---------------------" level="warning"/>
+        <echo message="This command overwrites the database selected for installation." level="warning"/>
+        <echo message="If you have data in it, create a backup to restore it after the setup process." level="warning"/>
+
+        <input message="Do you want to continue?" propertyName="setup.magento.confirmation" validArgs="y,n"/>
+        <if>
+            <equals arg1="${setup.magento.confirmation}" arg2="n"/>
+            <then>
+                <fail message="Setup installation aborted."/>
+            </then>
+        </if>
     </target>
-    
-    <target name="setup:install:params"
+
+    <target name="setup:release:params"
             hidden="true">
         <property name="release.version" value="master"/>
         <property name="release.overwrite" value="y"/>
     </target>
 
-    <target name="setup:static:data"
+    <target name="setup:magento:install"
             hidden="true">
-        <mkdir dir="${application.startdir}/${static.dir}/magento"/>
-
-        <echo message="move ${setup.magento.dir}/app/etc/env.php to ${application.startdir}/${static.dir}/magento/app/etc/env.php"/>
-        <move file="${setup.magento.dir}/app/etc/env.php"
-              tofile="${application.startdir}/${static.dir}/magento/app/etc/env.php"
-              haltonerror="true"/>
-
-        <echo message="move ${setup.magento.dir}/pub/media to ${application.startdir}/${static.dir}/magento/pub/media"/>
-        <move file="${setup.magento.dir}/pub/media"
-              todir="${application.startdir}/${static.dir}/magento/pub/media"
-              haltonerror="true"/>
-
-        <echo message="move ${setup.magento.dir}/var/log to ${application.startdir}/${static.dir}/magento/var/log"/>
-        <move file="${setup.magento.dir}/var/log"
-              todir="${application.startdir}/${static.dir}/magento/var/log"
-              haltonerror="true"/>
+        <property name="command.setup.install" value="${bin.n98-magerun2} install
+            --installationFolder=${release.target}/${magento.dir}
+            --noDownload
+            --forceUseDb=true
+            --installSampleData=no
+            --useDefaultConfigParams=no
+            --replaceHtaccessFile=n
+            --useDefaultConfigParams=yes"
+        />
+        <echo message="${command.setup.install}" />
+        <exec command="${command.setup.install}" checkreturn="true" passthru="true"/>
     </target>
 
 </project>
