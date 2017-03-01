@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<project name="Database">
+<project name="Database" basedir=".">
 
     <target name="magento:set:permissions"
             unless="skipSetPermissions"
@@ -15,7 +15,7 @@
             unless="skipUpdateScripts"
             hidden="true">
 
-        <property name="command.magento.upgrade" value="${bin.n98-magerun2} --root-dir=${release.target}/${magento.dir} setup:upgrade"/>
+        <property name="command.magento.upgrade" value="${bin.n98-magerun2} --root-dir=${release.target}/${magento.dir} setup:upgrade --keep-generated"/>
         <echo message="${command.magento.upgrade}"/>
         <exec command="${command.magento.upgrade}" outputProperty="command.magento.upgrade.output" checkreturn="false" logoutput="false"/>
 
@@ -24,10 +24,23 @@
         </phingcall>
     </target>
 
+    <target name="magento:generate:files"
+            hidden="true">
+        <if>
+            <istrue value="${magento.generate.files}"/>
+            <then>
+                <executeTarget target="magento:static-content:deploy"/>
+                <executeTarget target="magento:di:compile"/>
+            </then>
+            <else>
+                <echo message="Magento generation files skipped."/>
+            </else>
+        </if>
+    </target>
+
     <target name="magento:static-content:deploy"
             description="Deploys static view files"
             depends="magento:static-content:locales:set"
-            unless="skipDeployStatic"
             hidden="true">
 
         <property name="command.magento.static-content"

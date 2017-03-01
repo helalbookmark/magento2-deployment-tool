@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<project name="Util">
+<project name="Util" basedir=".">
 
     <target name="util:properties:read"
             description="read all required properties files"
@@ -13,6 +13,7 @@
     <target name="util:releases:cleanup"
             description="Remove old releases that are no longer needed"
             hidden="true">
+        <exec command="rm -rfv ${application.startdir}/${downloads.dir}/*" logoutput="true" checkreturn="true"/>
         <if>
             <and>
                 <isset property="releases.keep"/>

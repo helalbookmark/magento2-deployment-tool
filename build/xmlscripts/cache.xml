@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<project name="Cache">
+<project name="Cache" basedir=".">
 
     <target name="cache:clean:all"
-            description="Clear all caches"
+            description="Clear all caches (Magento, OPcache, Varnish)"
             depends="util:properties:read,
                 cache:magento:clean,
                 cache:opcache:restart,

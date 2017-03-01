@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<project name="DeploymentTool" default="help">
+<project name="Magento2 Deployment Tool" basedir="." default="help">
 
     <includepath classpath="${phing.dir}/build/phpscripts/Util"/>
     <taskdef name="executeTarget" classname="ExecuteTargetTask"/>
@@ -19,7 +19,7 @@
     </tstamp>
 
     <target name="help"
-            description="show help with information about the instance"
+            description="show help"
             depends="util:properties:read">
         <if>
             <isset property="setup.done"/>
@@ -56,19 +56,17 @@
     </target>
 
     <target name="release"
-            description="Release a new artifact version on current environment
-            [release.version|keepMaintenanceSet|skipDatabaseBackup|skipUpdateScripts|skipDeployStatic|skipCompilation]"
+            description="Release new project version [release.version|keepMaintenanceSet|skipDatabaseBackup]"
             depends="util:properties:read,
             release:validate:before,
             release:get:project,
             release:build:project,
             symlinks:set,
             magento:set:permissions,
+            magento:generate:files,
             maintenance:set,
             database:backup:create,
             magento:setup:upgrade,
-            magento:static-content:deploy,
-            magento:di:compile,
             release:live:replace,
             release:scripts:after,
             util:releases:cleanup">

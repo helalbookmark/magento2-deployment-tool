@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<project name="Symlinks">
+<project name="Symlinks" basedir=".">
 
     <target name="symlinks:set"
             description="Set project symlinks to static folders in server"

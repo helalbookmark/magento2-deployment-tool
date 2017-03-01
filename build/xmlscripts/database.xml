@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<project name="Database">
+<project name="Database" basedir=".">
 
     <target name="database:backup:create"
             depends="util:live:dir:properties"

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<project name="Release">
+<project name="Release" basedir=".">
 
     <target name="release:validate:before"
             hidden="true">
@@ -18,7 +18,7 @@
 
     <target name="release:get:project"
             depends="release:get:properties,
-            release:target:validate"
+            release:prepare:folders"
             hidden="true">
 
         <echo message="${command.get.project}" />
@@ -51,56 +51,63 @@
                 <contains string="${release.version}" substring="develop" casesensitive="false"/>
             </or>
             <then>
-                <property name="release.target" value="${application.startdir}/${releases.dir}/${release.filename}-${release.timestamp}"/>
+                <property name="release.filename" value="${release.filename}-${release.timestamp}" override="true"/>
                 <property name="command.get.project" value="${command.get.project.snapshot}"/>
                 <property name="command.build.project" value="${command.build.project.snapshot}"/>
             </then>
             <else>
-                <property name="release.target" value="${application.startdir}/${releases.dir}/${release.filename}" />
                 <property name="command.get.project" value="${command.get.project.version}" override="true"/>
                 <property name="command.build.project" value="${command.build.project.version}" override="true"/>
             </else>
         </if>
+        <property name="downloads.target" value="${application.startdir}/${downloads.dir}/${release.filename}"/>
+        <property name="release.target" value="${application.startdir}/${releases.dir}/${release.filename}"/>
     </target>
 
-    <target name="release:target:validate"
+    <target name="release:prepare:folders"
+            hidden="true" >
+        <if>
+            <and>
+                <available property="release.version.exists" file="${release.target}"/>
+            </and>
+            <then>
+                <executeTarget target="release:delete:confirm"/>
+                <echo message="Removing existing release for same version"/>
+                <delete dir="${release.target}" failonerror="true"/>
+            </then>
+        </if>
+        <property name="command.release.remove.downloads"
+                  value="rm -rf ${application.startdir}/${downloads.dir}/*" />
+        <echo message="${command.release.remove.downloads}"/>
+        <exec command="${command.release.remove.downloads}" logoutput="true" checkreturn="true"/>
+    </target>
+
+    <target name="release:delete:confirm"
             hidden="true">
         <if>
-            <available property="release.version.exists" file="${release.target}"/>
+            <not>
+                <isset property="release.overwrite"/>
+            </not>
             <then>
-                <if>
-                    <not>
-                        <isset property="release.overwrite"/>
-                    </not>
-                    <then>
-                        <input propertyName="release.overwrite"
-                               message="The release target ${release.target} already exists. Would you like to overwrite this version?"
-                               defaultValue="y" validArgs="y,n"/>
-                    </then>
-                </if>
-                <if>
-                    <equals arg1="${release.overwrite}" arg2="y"/>
-                    <then>
-                        <echo message="Removing existing old release with same name"/>
-                        <delete dir="${release.target}" failonerror="true"/>
-                    </then>
-                    <else>
-                        <fail message="${release.target} already exists and cannot be overwritten"/>
-                    </else>
-                </if>
+                <echo message="${release.target} already exists!" level="warning"/>
+                <input propertyName="release.overwrite"
+                       message=" Would you like to remove it?"
+                       defaultValue="y" validArgs="y,n"/>
             </then>
-            <else>
-                <echo message="${release.target} is a valid version to be deployed" />
-            </else>
         </if>
-
+        <if>
+            <equals arg1="${release.overwrite}" arg2="n"/>
+            <then>
+                <fail message="${release.target} already exists and cannot be overwritten"/>
+            </then>
+        </if>
     </target>
 
     <target name="release:build:project"
             hidden="true">
-        <property name="command.release.build" value="cd ${release.target} &amp;&amp; ${command.build.project}"/>
-        <echo message="${command.release.build}" />
-        <exec command="${command.release.build}"
+        <mkdir dir="${release.target}"/>
+        <echo message="${command.build.project}" />
+        <exec command="${command.build.project}"
               outputProperty="command.release.build.output"
               logoutput="false" checkreturn="true" />
         <phingcall target="util:check:output">

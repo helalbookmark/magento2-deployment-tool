@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<project name="Setup">
+<project name="Setup" basedir=".">
 
     <includepath classpath="${phing.dir}/build/phpscripts/Setup"/>
     <taskdef name="setProjectProperties" classname="ProjectPropertiesTask"/>
@@ -20,6 +20,7 @@
         <mkdir dir="${application.startdir}/${releases.dir}"/>
         <mkdir dir="${application.startdir}/${backup.dir}"/>
         <mkdir dir="${application.startdir}/${static.dir}"/>
+        <mkdir dir="${application.startdir}/${downloads.dir}"/>
 
         <mkdir dir="${application.startdir}/deployment-settings"/>
         <copy todir="${application.startdir}/deployment-settings/scripts" haltonerror="true">
@@ -38,9 +39,9 @@
 
     <target name="setup:magento:data"
             hidden="true">
-        <input message="Do you want to set Magento data?" propertyName="setup.magento.data.confirmation" validArgs="y,n"/>
+        <input message=" Do you want to set Magento data?" propertyName="setup.magento.data.confirm" validArgs="y,n"/>
         <if>
-            <equals arg1="${setup.magento.data.confirmation}" arg2="y"/>
+            <equals arg1="${setup.magento.data.confirm}" arg2="y"/>
             <then>
                 <executeTarget target="setup:magento:static:data"/>
             </then>
@@ -57,7 +58,7 @@
     </target>
 
     <target name="setup:magento:static:data"
-            depends="setup:magento:confirmation,
+            depends="setup:magento:confirm,
             setup:release:params,
             release:get:project,
             release:build:project,
@@ -82,7 +83,7 @@
         <delete dir="${release.target}" failonerror="true"/>
     </target>
 
-    <target name="setup:magento:confirmation"
+    <target name="setup:magento:confirm"
             hidden="true">
         <echo message="---------------------" level="warning"/>
         <echo message="     ATTENTION       " level="warning"/>
@@ -90,9 +91,9 @@
         <echo message="This command overwrites the database selected for installation." level="warning"/>
         <echo message="If you have data in it, create a backup to restore it after the setup process." level="warning"/>
 
-        <input message="Do you want to continue?" propertyName="setup.magento.confirmation" validArgs="y,n"/>
+        <input message=" Do you want to continue?" propertyName="setup.magento.confirm" validArgs="y,n"/>
         <if>
-            <equals arg1="${setup.magento.confirmation}" arg2="n"/>
+            <equals arg1="${setup.magento.confirm}" arg2="n"/>
             <then>
                 <fail message="Setup installation aborted."/>
             </then>

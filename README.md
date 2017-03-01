@@ -1,5 +1,23 @@
 # Magento 2 Deployment tool
 
+Deployment tool for Magento 2 created with [PHing](https://www.phing.info/). This tool builds a new project version into a separate directory and replaces current live version with new one at the end.
+
+Main Steps automatically performed during relase deployment:
+
+```
+1. Get new Project version (i.e git clone, curl, ...)
+2. Build Project (i.e composer install, untar, ...)
+3. Symlinks to static content in server
+4. Set folder/files permissions
+5. Generate Magento files (Skipped if deploying `.tar`)
+6. Set Maintenance
+7. Database backup
+8. Magento setup:upgrade
+9. Replace live version with new one
+10. Unset maintenance
+11. Clean up old releases and backups
+```
+
 ## Installation
 
 Global installation using composer is required.
@@ -53,11 +71,14 @@ Global installation using composer is required.
   | - deployment-settings
   | - public_html (Symlink)
   | - releases
+  | - tmp-downloads
   | - static
     | - magento
     	| - app (etc/env.php)
     	| - pub
+    		| - media
     	| - var
+    		| - log    		nloads
 
 ```
 
@@ -71,10 +92,18 @@ Tool must be executed at the path where the the project will be deployed.
 	$ mg2-deployer release
 	```
 
-* List all avaiable commands:
+* Other avaiable commands:
 
 	```
 	$ mg2-deployer -list
+
+	Main targets:
+	------------
+ 	release               Options -> [keepMaintenanceSet|skipDatabaseBackup]
+ 	maintenance:set       Set maintenance window
+ 	maintenance:unset     Replace maintenance window with a specific released version
+ 	release:live:replace  Set a specific release as live version
+    cache:clean:all       Clear all caches (Magento, OPcache, Varnish)
 	```
 
 
@@ -112,6 +141,22 @@ You can set custom scripts to run at the end of the release process on the follo
 cp deployment-settings/scripts/release-after.sh.dist deployment-settings/scripts/release-after.sh
 vim deployment-settings/scripts/release-after.sh
 ```
+
+## Advanced Configuration (for CI/CD env)
+If you are smart, you probably have a CI/CD environment where you already build the project and create a `tar` archive. Then you probably want to skip Magento generation files (assets & compilation) during the deployment.
+
+You can do that by setting this configuration in `deployment-settings/project.properties`:
+
+```
+magento.generate.files=0
+command.get.project.version=scp <user>@<server_domain>:<path>${release.version}.tar.gz ${downloads.target}.tar.gz
+command.build.project.version=tar -xzf ${downloads.target}.tar.gz -C ${release.target}
+
+command.get.project.snapshot=${command.get.project.version}
+command.build.project.snapshot=${command.build.project.version}
+```
+
+**NOTE** `${}` variables are automatically replaced during deployment.
 
 
 ## Tips:
