@@ -74,7 +74,7 @@
         </copy>
 
         <copy todir="${application.startdir}/${static.dir}/magento/pub/media">
-            <fileset dir="${release.target}/${magento.dir}/magento/pub/media">
+            <fileset dir="${release.target}/${magento.dir}/pub/media">
                 <include name="**"/>
             </fileset>
         </copy>
