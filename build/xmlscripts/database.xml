@@ -9,20 +9,24 @@
         <if>
             <istrue value="${live.magento.dir.exists}"/>
             <then>
-                <basename file="${live.dir}" property="live.dir.basename"/>
-                <property name="database.dump.filename" value="${application.startdir}/${backup.dir}/backup_${live.dir.basename}_${release.timestamp}.sql.gz"/>
-                <property name="command.database.dump" value="${bin.n98-magerun2} --root-dir=${live.dir}/${magento.dir} db:dump --compression='gzip' ${database.dump.filename}"/>
-                <echo message="${command.database.dump}"/>
-                <exec command="${command.database.dump}" outputProperty="command.database.dump.output"
-                      checkreturn="true" logoutput="false" />
-                <phingcall target="util:check:output">
-                    <property name="check.output" value="${command.database.dump.output}" override="true" />
-                </phingcall>
+                <property name="backup.project.dir" value="${live.dir}"/>
+                <basename file="${live.dir}" property="backup.version.basename"/>
+                <property name="backup.filename" value="backup_${backup.version.basename}_${release.timestamp}"/>
             </then>
             <else>
-                <echo message="Database dump skipped. Live magento dir not found."/>
+                <property name="backup.project.dir" value="${release.target}"/>
+                <property name="backup.filename" value="backup_${release.timestamp}"/>
             </else>
         </if>
+
+        <property name="database.dump.filename" value="${application.startdir}/${backup.dir}/${backup.filename}.sql.gz"/>
+        <property name="command.database.dump" value="${bin.n98-magerun2} --root-dir=${backup.project.dir}/${magento.dir} db:dump --compression='gzip' ${database.dump.filename}"/>
+        <echo message="${command.database.dump}"/>
+        <exec command="${command.database.dump}" outputProperty="command.database.dump.output"
+              checkreturn="true" logoutput="false" />
+        <phingcall target="util:check:output">
+            <property name="check.output" value="${command.database.dump.output}" override="true" />
+        </phingcall>
     </target>
 
 </project>
