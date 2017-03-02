@@ -10,8 +10,6 @@
             <istrue value="${live.magento.dir.exists}"/>
             <then>
                 <basename file="${live.dir}" property="live.dir.basename"/>
-                <exec command="echo ${live.dir.basename} | tr . -" outputProperty="live.dir.basename" checkreturn="true"/>
-
                 <property name="database.dump.filename" value="${application.startdir}/${backup.dir}/backup_${live.dir.basename}_${release.timestamp}.sql.gz"/>
                 <property name="command.database.dump" value="${bin.n98-magerun2} --root-dir=${live.dir}/${magento.dir} db:dump --compression='gzip' ${database.dump.filename}"/>
                 <echo message="${command.database.dump}"/>
