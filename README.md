@@ -1,8 +1,8 @@
 # Magento 2 Deployment tool
 
-Deployment tool for Magento 2 created with [PHing](https://www.phing.info/). This tool builds a new project version into a separate directory and replaces current live version with new one at the end.
+Deployment tool for Magento 2 created with [PHing](https://www.phing.info/). This tool builds a new project version into a separate directory and switches live version at the end.
 
-Main Steps automatically performed during relase deployment:
+Workflow:
 
 ```
 1. Get new Project version (i.e git clone, curl, ...)
@@ -32,7 +32,6 @@ Global installation using composer is required.
 
 	```
 	composer global config -l | grep "bin-dir"
-
 	```
 
 0. Add path from previous step into your `$PATH` configuration:
@@ -40,7 +39,6 @@ Global installation using composer is required.
 
 	```
 	which mg2-deployer
-
 	```
 
 ## Setup
@@ -78,8 +76,7 @@ Global installation using composer is required.
     	| - pub
     		| - media
     	| - var
-    		| - log    		nloads
-
+    		| - log
 ```
 
 ## Usage
@@ -124,7 +121,6 @@ You can edit the maintenance file with your own design:
 
 ```
 vim deployment-settings/templates/maintenance/${magento.dir}/pub/index.php
-
 ```
 
 ### Static content & Symlinks
@@ -171,7 +167,6 @@ command.build.project.snapshot=${command.build.project.version}
     vim deployment-settings/project.properties
     release.version=snapshot
     skipDatabaseBackup=1
-
     ```
 
 ## Troubleshooting
