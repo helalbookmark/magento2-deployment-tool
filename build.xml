@@ -56,7 +56,7 @@
     </target>
 
     <target name="release"
-            description="Release new project version [release.version|keepMaintenanceSet|skipDatabaseBackup]"
+            description="Release new project version [release.version|keepMaintenanceSet|skipDatabaseBackup|skipSetPermissions]"
             depends="util:properties:read,
             release:validate:before,
             release:get:project,

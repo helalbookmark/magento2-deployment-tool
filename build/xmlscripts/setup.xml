@@ -64,15 +64,16 @@
             release:build:project,
             setup:magento:install"
             hidden="true">
-
-        <copy file="${release.target}/${magento.dir}/app/etc/env.php"
-              tofile="${application.startdir}/${static.dir}/magento/app/etc/env.php">
-            <filterchain>
-                <replaceregexp>
-                    <regexp pattern="'MAGE_MODE' =&gt; 'default'" replace="'MAGE_MODE' =&gt; 'production'"/>
-                </replaceregexp>
-            </filterchain>
-        </copy>
+        <if>
+            <available property="setup.static.envphp.exists" file="${application.startdir}/${static.dir}/magento/app/etc/env.php"/>
+            <then>
+                <echo message="env.php not copied. It already exists in ${application.startdir}/${static.dir}/magento/app/etc/env.php"/>
+            </then>
+            <else>
+                <copy file="${release.target}/${magento.dir}/app/etc/env.php"
+                      tofile="${application.startdir}/${static.dir}/magento/app/etc/env.php"/>
+            </else>
+        </if>
 
         <copy todir="${application.startdir}/${static.dir}/magento/pub/media">
             <fileset dir="${release.target}/${magento.dir}/pub/media">
@@ -119,6 +120,10 @@
         />
         <echo message="${command.setup.install}" />
         <exec command="${command.setup.install}" checkreturn="true" passthru="true"/>
+
+        <exec command="${bin.n98-magerun2} --root-dir=${release.target}/${magento.dir} deploy:mode:set production --skip-compilation"
+              logoutput="true"
+              checkreturn="true"/>
     </target>
 
 </project>

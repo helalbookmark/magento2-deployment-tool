@@ -12,7 +12,6 @@
     </target>
 
     <target name="magento:setup:upgrade"
-            unless="skipUpdateScripts"
             hidden="true">
 
         <property name="command.magento.upgrade" value="${bin.n98-magerun2} --root-dir=${release.target}/${magento.dir} setup:upgrade --keep-generated"/>
@@ -60,7 +59,6 @@
         <exec command="${bin.n98-magerun2} --root-dir=${release.target}/${magento.dir} config:get --format=json general/locale/code | grep -Po '(?&lt;=&quot;Value&quot;: &quot;)[^&quot;]*' | sort -u | xargs"
               outputProperty="config.stores.languages"
               checkreturn="true"/>
-
         <!-- Ensure that en_US language is always in the list -->
         <if>
             <not>
@@ -73,7 +71,6 @@
     </target>
 
     <target name="magento:di:compile"
-            unless="skipCompilation"
             hidden="true">
 
         <property name="command.magento.compile" value="${bin.n98-magerun2} --root-dir=${release.target}/${magento.dir} setup:di:compile"/>
