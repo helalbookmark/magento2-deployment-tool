@@ -7,7 +7,7 @@ Workflow:
 ```
 1. Get new Project version (i.e git clone, curl, ...)
 2. Build Project (i.e composer install, untar, ...)
-3. Symlinks to static content in server
+3. Symlinks to shared content in server
 4. Generate Magento files (Skipped if deploying `.tar`)
 5. Set folder/files permissions
 6. Set Maintenance
@@ -70,7 +70,7 @@ Global installation using composer is required.
   | - public_html (Symlink)
   | - releases
   | - tmp-downloads
-  | - static
+  | - shared
     | - magento
     	| - app (etc/env.php)
     	| - pub
@@ -123,11 +123,11 @@ You can edit the maintenance file with your own design:
 vim deployment-settings/templates/maintenance/${magento.dir}/pub/index.php
 ```
 
-### Static content & Symlinks
+### Shared content & Symlinks
 
-* Static content that is only relevant on the server will be kept into the `static` folder.
+* Static content that is only relevant on the server will be kept into the `shared` folder.
 * Symlinks are created automatically on released project during every deployment.
-* You can add your custom files into `static/magento` and they will be automatically symlinked.
+* You can add your custom files into `shared/magento` and they will be automatically symlinked.
 
 ### Scripts
 

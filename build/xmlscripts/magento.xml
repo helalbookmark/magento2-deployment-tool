@@ -38,7 +38,7 @@
     </target>
 
     <target name="magento:static-content:deploy"
-            description="Deploys static view files"
+            description="Deploys static asset files"
             depends="magento:static-content:locales:set"
             hidden="true">
 

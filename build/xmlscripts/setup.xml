@@ -19,7 +19,7 @@
             hidden="true">
         <mkdir dir="${application.startdir}/${releases.dir}"/>
         <mkdir dir="${application.startdir}/${backup.dir}"/>
-        <mkdir dir="${application.startdir}/${static.dir}"/>
+        <mkdir dir="${application.startdir}/${shared.dir}"/>
         <mkdir dir="${application.startdir}/${downloads.dir}"/>
 
         <mkdir dir="${application.startdir}/deployment-settings"/>
@@ -34,7 +34,7 @@
               haltonerror="true"/>
         <symlink target="${application.startdir}/${maintenance.page}" link="${application.startdir}/${live.symlink}" overwrite="true"/>
 
-        <mkdir dir="${application.startdir}/${static.dir}/magento/var/log" />
+        <mkdir dir="${application.startdir}/${shared.dir}/magento/var/log" />
     </target>
 
     <target name="setup:magento:data"
@@ -43,21 +43,21 @@
         <if>
             <equals arg1="${setup.magento.data.confirm}" arg2="y"/>
             <then>
-                <executeTarget target="setup:magento:static:data"/>
+                <executeTarget target="setup:magento:shared:data"/>
             </then>
             <else>
                 <echo message="-----------------------" level="warning"/>
                 <echo message="Magento data not set   " level="warning"/>
                 <echo message="-----------------------" level="warning"/>
                 <echo message="Please set the following manually:" level="warning"/>
-                <echo message="- create 'env.php' into -> ${application.startdir}/${static.dir}/magento/app/etc/env.php" level="warning"/>
-                <echo message="- create 'media' into -> ${application.startdir}/${static.dir}/magento/pub/media" level="warning"/>
+                <echo message="- create 'env.php' into -> ${application.startdir}/${shared.dir}/magento/app/etc/env.php" level="warning"/>
+                <echo message="- create 'media' into -> ${application.startdir}/${shared.dir}/magento/pub/media" level="warning"/>
                 <echo message="- import dump in database" level="warning"/>
             </else>
         </if>
     </target>
 
-    <target name="setup:magento:static:data"
+    <target name="setup:magento:shared:data"
             depends="setup:magento:confirm,
             setup:release:params,
             release:get:project,
@@ -65,17 +65,17 @@
             setup:magento:install"
             hidden="true">
         <if>
-            <available property="setup.static.envphp.exists" file="${application.startdir}/${static.dir}/magento/app/etc/env.php"/>
+            <available property="setup.shared.envphp.exists" file="${application.startdir}/${shared.dir}/magento/app/etc/env.php"/>
             <then>
-                <echo message="env.php not copied. It already exists in ${application.startdir}/${static.dir}/magento/app/etc/env.php"/>
+                <echo message="env.php not copied. It already exists in ${application.startdir}/${shared.dir}/magento/app/etc/env.php"/>
             </then>
             <else>
                 <copy file="${release.target}/${magento.dir}/app/etc/env.php"
-                      tofile="${application.startdir}/${static.dir}/magento/app/etc/env.php"/>
+                      tofile="${application.startdir}/${shared.dir}/magento/app/etc/env.php"/>
             </else>
         </if>
 
-        <copy todir="${application.startdir}/${static.dir}/magento/pub/media">
+        <copy todir="${application.startdir}/${shared.dir}/magento/pub/media">
             <fileset dir="${release.target}/${magento.dir}/pub/media">
                 <include name="**"/>
             </fileset>

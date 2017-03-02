@@ -3,29 +3,29 @@
 <project name="Symlinks" basedir=".">
 
     <target name="symlinks:set"
-            description="Set project symlinks to static folders in server"
+            description="Set project symlinks to shared folders in server"
             hidden="true">
 
         <symlink link="${release.target}/${magento.dir}/app" overwrite="true">
-            <fileset dir="${application.startdir}/${static.dir}/magento/app">
+            <fileset dir="${application.startdir}/${shared.dir}/magento/app">
                 <include name="**/*.*"/>
             </fileset>
         </symlink>
 
         <symlink link="${release.target}/${magento.dir}/pub" overwrite="true">
-            <fileset dir="${application.startdir}/${static.dir}/magento/pub">
+            <fileset dir="${application.startdir}/${shared.dir}/magento/pub">
                 <include name="*" />
             </fileset>
         </symlink>
 
         <symlink link="${release.target}/${magento.dir}/var" overwrite="true">
-            <fileset dir="${application.startdir}/${static.dir}/magento/var">
+            <fileset dir="${application.startdir}/${shared.dir}/magento/var">
                 <include name="*" />
             </fileset>
         </symlink>
 
         <symlink link="${release.target}/${magento.dir}" overwrite="true">
-            <fileset dir="${application.startdir}/${static.dir}/magento">
+            <fileset dir="${application.startdir}/${shared.dir}/magento">
                 <include name="*"/>
                 <exclude name="app"/>
                 <exclude name="pub"/>
