@@ -171,9 +171,7 @@ command.build.project.snapshot=${command.build.project.version}
 
 ## Troubleshooting
 
-####Starting compilation
-
-* **Error**: Something went wrong while compiling generated code. See the error log for details.
+####Compilation error
 
 * **Solution**: Increase php `memory_limit` configuration to 728M o 1024M
 
