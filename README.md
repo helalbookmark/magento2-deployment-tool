@@ -178,5 +178,5 @@ command.build.project.snapshot=${command.build.project.version}
 
 ## Prerequisites
 
-- PHP >= 7.0.*
-- MAGENTO >= 2.1.*
+- PHP >= 7.0.8
+- MAGENTO >= 2.1.1
