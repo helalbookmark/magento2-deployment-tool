@@ -28,8 +28,8 @@
         <if>
             <istrue value="${magento.generate.files}"/>
             <then>
-                <executeTarget target="magento:static-content:deploy"/>
                 <executeTarget target="magento:di:compile"/>
+                <executeTarget target="magento:static-content:deploy"/>
             </then>
             <else>
                 <echo message="Magento generation files skipped."/>

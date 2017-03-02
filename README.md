@@ -8,8 +8,8 @@ Workflow:
 1. Get new Project version (i.e git clone, curl, ...)
 2. Build Project (i.e composer install, untar, ...)
 3. Symlinks to static content in server
-4. Set folder/files permissions
-5. Generate Magento files (Skipped if deploying `.tar`)
+4. Generate Magento files (Skipped if deploying `.tar`)
+5. Set folder/files permissions
 6. Set Maintenance
 7. Database backup
 8. Magento setup:upgrade
