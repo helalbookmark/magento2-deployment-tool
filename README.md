@@ -18,11 +18,19 @@ Workflow:
 11. Clean up old releases and backups
 ```
 
-## Demo
+## Demos
+
+* Deploying git repo
+
+<a href="http://www.youtube.com/watch?feature=player_embedded&v=JFDen6iXMko
+" target="_blank"><img src="docs/images/youtube/deploy_git.png"
+alt="Magento2 deploy from git" width="240" height="180" border="10" /></a>
+
+* Deploying .tar archive
 
 <a href="http://www.youtube.com/watch?feature=player_embedded&v=JqmZTjbmDwo
-" target="_blank"><img src="http://img.youtube.com/vi/JqmZTjbmDwo/0.jpg"
-alt="IMAGE ALT TEXT HERE" width="240" height="180" border="10" /></a>
+" target="_blank"><img src="docs/images/youtube/deploy_tar.png"
+alt="Magento2 deploy from tar" width="240" height="180" border="10" /></a>
 
 ## Installation
 
