@@ -22,6 +22,7 @@ class ProjectPropertiesTask extends Task
         "magento.dir" => ['description' => 'Magento dir into the project root. Set "." if magento is installed on project root'],
         "opcache.enabled" => ['valid_values' => [1, 0]],
         "varnish.enabled" => ['valid_values' =>[1, 0]],
+        "static-content.languages" => ['description' => 'Space-separated list of language codes to deploy']
     ];
 
     public function main()

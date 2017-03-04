@@ -2,6 +2,46 @@
 
 <project name="Database" basedir=".">
 
+    <target name="magento:generate:files"
+            hidden="true">
+        <if>
+            <istrue value="${magento.generate.files}"/>
+            <then>
+                <executeTarget target="magento:di:compile"/>
+                <executeTarget target="magento:static-content:deploy"/>
+            </then>
+            <else>
+                <echo message="Magento generation files skipped."/>
+            </else>
+        </if>
+    </target>
+
+    <target name="magento:di:compile"
+            hidden="true">
+
+        <property name="command.magento.compile" value="${bin.n98-magerun2} --root-dir=${release.target}/${magento.dir} setup:di:compile"/>
+        <echo message="${command.magento.compile}"/>
+        <exec command="${command.magento.compile}" outputProperty="command.magento.compile.output" checkreturn="false" logoutput="false"/>
+
+        <phingcall target="util:check:output">
+            <property name="check.output" value="${command.magento.compile.output}" override="true"/>
+        </phingcall>
+    </target>
+
+    <target name="magento:static-content:deploy"
+            description="Deploys static asset files"
+            hidden="true">
+
+        <property name="command.magento.static-content"
+                  value="${bin.n98-magerun2} --root-dir=${release.target}/${magento.dir} setup:static-content:deploy ${static-content.languages} ${command.static-content.deploy.options}"/>
+        <echo message="${command.magento.static-content}"/>
+        <exec command="${command.magento.static-content}" outputProperty="command.magento.static-content.output" checkreturn="false" logoutput="false"/>
+
+        <phingcall target="util:check:output">
+            <property name="check.output" value="${command.magento.static-content.output}" override="true"/>
+        </phingcall>
+    </target>
+
     <target name="magento:set:permissions"
             unless="skipSetPermissions"
             hidden="true">
@@ -20,65 +60,6 @@
 
         <phingcall target="util:check:output">
             <property name="check.output" value="${command.magento.upgrade.output}" override="true"/>
-        </phingcall>
-    </target>
-
-    <target name="magento:generate:files"
-            hidden="true">
-        <if>
-            <istrue value="${magento.generate.files}"/>
-            <then>
-                <executeTarget target="magento:di:compile"/>
-                <executeTarget target="magento:static-content:deploy"/>
-            </then>
-            <else>
-                <echo message="Magento generation files skipped."/>
-            </else>
-        </if>
-    </target>
-
-    <target name="magento:static-content:deploy"
-            description="Deploys static asset files"
-            depends="magento:static-content:locales:set"
-            hidden="true">
-
-        <property name="command.magento.static-content"
-                  value="${bin.n98-magerun2} --root-dir=${release.target}/${magento.dir} setup:static-content:deploy ${config.stores.languages} ${command.static-content.deploy.options}"/>
-        <echo message="${command.magento.static-content}"/>
-        <exec command="${command.magento.static-content}" outputProperty="command.magento.static-content.output" checkreturn="false" logoutput="false"/>
-
-        <phingcall target="util:check:output">
-            <property name="check.output" value="${command.magento.static-content.output}" override="true"/>
-        </phingcall>
-    </target>
-
-    <target name="magento:static-content:locales:set"
-            description="Set locales for deploying static content"
-            hidden="true">
-        <!-- Get list of all store languages to generate the static content for all of them -->
-        <exec command="${bin.n98-magerun2} --root-dir=${release.target}/${magento.dir} config:get --format=json general/locale/code | grep -Po '(?&lt;=&quot;Value&quot;: &quot;)[^&quot;]*' | sort -u | xargs"
-              outputProperty="config.stores.languages"
-              checkreturn="true"/>
-        <!-- Ensure that en_US language is always in the list -->
-        <if>
-            <not>
-                <contains substring="en_US" string="${config.stores.languages}"/>
-            </not>
-            <then>
-                <property name="config.stores.languages" value="${config.stores.languages} en_US" override="true"/>
-            </then>
-        </if>
-    </target>
-
-    <target name="magento:di:compile"
-            hidden="true">
-
-        <property name="command.magento.compile" value="${bin.n98-magerun2} --root-dir=${release.target}/${magento.dir} setup:di:compile"/>
-        <echo message="${command.magento.compile}"/>
-        <exec command="${command.magento.compile}" outputProperty="command.magento.compile.output" checkreturn="false" logoutput="false"/>
-
-        <phingcall target="util:check:output">
-            <property name="check.output" value="${command.magento.compile.output}" override="true"/>
         </phingcall>
     </target>
 
