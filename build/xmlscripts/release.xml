@@ -109,7 +109,7 @@
         <echo message="${command.build.project}" />
         <exec command="${command.build.project}"
               outputProperty="command.release.build.output"
-              logoutput="false" checkreturn="true" />
+              logoutput="false" checkreturn="true" passthru="true"/>
         <phingcall target="util:check:output">
             <property name="check.output" value="${command.release.build.output}" override="true" />
         </phingcall>
