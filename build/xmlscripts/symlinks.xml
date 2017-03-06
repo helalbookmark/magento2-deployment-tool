@@ -6,32 +6,10 @@
             description="Set project symlinks to shared folders in server"
             hidden="true">
 
-        <symlink link="${release.target}/${magento.dir}/app" overwrite="true">
-            <fileset dir="${application.startdir}/${shared.dir}/magento/app">
-                <include name="**/*.*"/>
-            </fileset>
-        </symlink>
+        <property name="command.symlinks.shared.create" value="${bin.symlinker-pro} create:from:file --dest-prefix-path=${release.target} ${application.startdir}/deployment-settings/shared.symlinks -f"/>
+        <echo message="${command.symlinks.shared.create}"/>
+        <exec command="${command.symlinks.shared.create}" checkreturn="true" logoutput="true"/>
 
-        <symlink link="${release.target}/${magento.dir}/pub" overwrite="true">
-            <fileset dir="${application.startdir}/${shared.dir}/magento/pub">
-                <include name="*" />
-            </fileset>
-        </symlink>
-
-        <symlink link="${release.target}/${magento.dir}/var" overwrite="true">
-            <fileset dir="${application.startdir}/${shared.dir}/magento/var">
-                <include name="*" />
-            </fileset>
-        </symlink>
-
-        <symlink link="${release.target}/${magento.dir}" overwrite="true">
-            <fileset dir="${application.startdir}/${shared.dir}/magento">
-                <include name="*"/>
-                <exclude name="app"/>
-                <exclude name="pub"/>
-                <exclude name="var"/>
-            </fileset>
-        </symlink>
     </target>
 
 </project>

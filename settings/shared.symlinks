@@ -1,0 +1,3 @@
+{{SHARED_DIR}}/magento/app/etc/env.php=>{{MAGENTO_DIR}}/app/etc/env.php
+{{SHARED_DIR}}/magento/pub/media=>{{MAGENTO_DIR}}/pub/media
+{{SHARED_DIR}}/magento/var/log=>{{MAGENTO_DIR}}/var/log

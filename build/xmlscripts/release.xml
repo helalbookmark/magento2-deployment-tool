@@ -150,9 +150,9 @@
                 <fail message="Release target not found: ${release.target}"/>
             </then>
         </if>
-        <symlink target="${release.target}"
-                 link="${application.startdir}/${live.symlink}"
-                 overwrite="true"/>
+
+        <exec command="${bin.symlinker-pro} create:link ${release.target} ${application.startdir}/${live.symlink} -f" checkreturn="true" logoutput="true"/>
+
         <property name="live.dir.before.maintenance" value="false" override="true"/>
         <executeTarget target="cache:clean:all"/>
     </target>

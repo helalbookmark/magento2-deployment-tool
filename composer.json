@@ -13,7 +13,8 @@
   "require": {
     "phing/phing": "2.*",
     "n98/magerun2": "1.3.2",
-    "staempfli/cachetool": "2.1.0"
+    "staempfli/cachetool": "2.1.0",
+    "staempfli/symlinker-pro": "dev-master"
   },
   "config": {
     "bin-dir": "bin"
