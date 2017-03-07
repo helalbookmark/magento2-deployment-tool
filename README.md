@@ -140,8 +140,15 @@ vim deployment-settings/templates/maintenance/${magento.dir}/pub/index.php
 ### Shared content & Symlinks
 
 * Static content that is only relevant on the server will be kept into the `shared` folder.
-* Symlinks are created automatically on released project during every deployment.
-* You can add your custom files into `shared/magento` and they will be automatically symlinked.
+* Symlinks are created automatically in the released project during every deployment.
+* You can add your custom symlinks by editing the file `deployment-settings/shared.symlinks`
+
+	```
+	shared/magento/app/etc/env.php=>{{MAGENTO_DIR}}/app/etc/env.php
+	shared/magento/pub/media=>{{MAGENTO_DIR}}/pub/media
+	shared/magento/var/log=>{{MAGENTO_DIR}}/var/log
+	```
+	* Note that you must replace `{{MAGENTO_DIR}}` with your magento dir or `.` if same as root project.
 
 ### Scripts
 
@@ -194,3 +201,15 @@ command.build.project.snapshot=${command.build.project.version}
 
 - PHP >= 7.0.8
 - MAGENTO >= 2.1.1
+
+## Developers
+
+* [Juan Alonso](https://github.com/jalogut)
+
+Licence
+-------
+[GNU General Public License, version 3 (GPLv3)](http://opensource.org/licenses/gpl-3.0)
+
+Copyright
+---------
+(c) 2016 Staempfli AG
