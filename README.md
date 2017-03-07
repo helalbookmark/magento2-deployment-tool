@@ -100,13 +100,13 @@ Tool must be executed at the path where the the project will be deployed.
 * Deploy new releases:
 
 	```
-	$ mg2-deployer release
+	mg2-deployer release [-Drelease.version=<version_number>]
 	```
 
-* Other avaiable commands:
+* Other available commands:
 
 	```
-	$ mg2-deployer -list
+	mg2-deployer -list
 
 	Main targets:
 	------------
