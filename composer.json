@@ -14,7 +14,7 @@
     "phing/phing": "2.*",
     "n98/magerun2": "1.3.2",
     "staempfli/cachetool": "2.1.0",
-    "staempfli/symlinker-pro": "dev-master"
+    "staempfli/symlinker-pro": "~1.0"
   },
   "config": {
     "bin-dir": "bin"
