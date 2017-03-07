@@ -109,7 +109,7 @@
         <echo message="${command.build.project}" />
         <exec command="${command.build.project}"
               outputProperty="command.release.build.output"
-              logoutput="false" checkreturn="true" />
+              logoutput="false" checkreturn="true"/>
         <phingcall target="util:check:output">
             <property name="check.output" value="${command.release.build.output}" override="true" />
         </phingcall>
@@ -150,9 +150,9 @@
                 <fail message="Release target not found: ${release.target}"/>
             </then>
         </if>
-        <symlink target="${release.target}"
-                 link="${application.startdir}/${live.symlink}"
-                 overwrite="true"/>
+
+        <exec command="${bin.symlinker-pro} create:link ${release.target} ${application.startdir}/${live.symlink} -f" checkreturn="true" logoutput="true"/>
+
         <property name="live.dir.before.maintenance" value="false" override="true"/>
         <executeTarget target="cache:clean:all"/>
     </target>

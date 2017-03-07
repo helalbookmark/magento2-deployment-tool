@@ -93,6 +93,7 @@
                     <contains string="${check.output}" substring="error" casesensitive="false"/>
                     <contains string="${check.output}" substring="denied" casesensitive="false"/>
                     <contains string="${check.output}" substring="failed" casesensitive="false"/>
+                    <contains string="${check.output}" substring="Exception" casesensitive="false"/>
                 </or>
             </and>
             <then>

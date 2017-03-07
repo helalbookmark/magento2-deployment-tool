@@ -23,6 +23,15 @@
         <mkdir dir="${application.startdir}/${downloads.dir}"/>
 
         <mkdir dir="${application.startdir}/deployment-settings"/>
+        <copy file="${phing.dir}/settings/shared.symlinks"
+              tofile="${application.startdir}/deployment-settings/shared.symlinks">
+            <filterchain>
+                <replacetokens begintoken="{{" endtoken="}}">
+                    <token key="SHARED_DIR" value="${shared.dir}" />
+                    <token key="MAGENTO_DIR" value="${magento.dir}" />
+                </replacetokens>
+            </filterchain>
+        </copy>
         <copy todir="${application.startdir}/deployment-settings/scripts" haltonerror="true">
             <fileset dir="${phing.dir}/settings/scripts">
                 <include name="**"/>
@@ -32,7 +41,7 @@
         <copy file="${phing.dir}/settings/templates/maintenance.php"
               tofile="${application.startdir}/deployment-settings/templates/maintenance/${magento.dir}/pub/index.php"
               haltonerror="true"/>
-        <symlink target="${application.startdir}/${maintenance.page}" link="${application.startdir}/${live.symlink}" overwrite="true"/>
+        <exec command="${bin.symlinker-pro} create:link ${application.startdir}/${maintenance.page} ${application.startdir}/${live.symlink} -f" checkreturn="true" logoutput="true"/>
 
         <mkdir dir="${application.startdir}/${shared.dir}/magento/var/log" />
     </target>

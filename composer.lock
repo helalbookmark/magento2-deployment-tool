@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "2655a6c1c955c43bb5fe9d86b157af83",
+    "content-hash": "fcba69f709301a8eab70e7393a030c14",
     "packages": [
         {
             "name": "composer/ca-bundle",
@@ -1010,12 +1010,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/staempfli/cachetool.git",
-                "reference": "450008ae9a984d6511e45cec093c68c6dba07764"
+                "reference": "a009c0dc7b1c3a61cd1aa8e6ee36d0f9b3805438"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/staempfli/cachetool/zipball/450008ae9a984d6511e45cec093c68c6dba07764",
-                "reference": "450008ae9a984d6511e45cec093c68c6dba07764",
+                "url": "https://api.github.com/repos/staempfli/cachetool/zipball/a009c0dc7b1c3a61cd1aa8e6ee36d0f9b3805438",
+                "reference": "a009c0dc7b1c3a61cd1aa8e6ee36d0f9b3805438",
                 "shasum": ""
             },
             "bin": [
@@ -1023,6 +1023,9 @@
             ],
             "type": "library",
             "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
             "authors": [
                 {
                     "name": "Juan Alonso",
@@ -1030,7 +1033,50 @@
                 }
             ],
             "description": "Staempfli AG cachetool binary",
-            "time": "2017-02-23T08:30:58+00:00"
+            "time": "2017-02-23T10:20:04+00:00"
+        },
+        {
+            "name": "staempfli/symlinker-pro",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/staempfli/symlinker-pro.git",
+                "reference": "3373578f18ed9724c697b4a30c403b9b0e8decce"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/staempfli/symlinker-pro/zipball/3373578f18ed9724c697b4a30c403b9b0e8decce",
+                "reference": "3373578f18ed9724c697b4a30c403b9b0e8decce",
+                "shasum": ""
+            },
+            "require": {
+                "symfony/console": "~3.0|~2.1"
+            },
+            "require-dev": {
+                "kherge/box": "~2.5",
+                "padraic/phar-updater": "1.0.*"
+            },
+            "bin": [
+                "bin/symlinker-pro"
+            ],
+            "type": "staempfli-tool",
+            "autoload": {
+                "psr-4": {
+                    "Staempfli\\Symlinker\\": "src/Staempfli/Symlinker/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-3.0"
+            ],
+            "authors": [
+                {
+                    "name": "Juan Alonso",
+                    "email": "juan.alonso@staempfli.com"
+                }
+            ],
+            "description": "Tool to create relative symlinks",
+            "time": "2017-03-06 15:03:28"
         },
         {
             "name": "symfony/console",
@@ -1730,7 +1776,9 @@
     "packages-dev": [],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {
+        "staempfli/symlinker-pro": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": [],
